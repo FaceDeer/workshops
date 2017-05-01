@@ -35,7 +35,6 @@ local function smelter_timer(pos, elapsed)
 	local cook_time = meta:get_float("cook_time") or 0
 	local burn_time = meta:get_float("burn_time") or 0
 
-	burn_time = burn_time - elapsed
 	cook_time = cook_time + elapsed
 	
 	local inv = meta:get_inventory()
@@ -43,25 +42,39 @@ local function smelter_timer(pos, elapsed)
 	local recipe
 	if not inv:is_empty("target") then
 		recipe = crafting.get_crafting_result("smelter", inv:get_list("input"), inv:get_stack("target", 1))
+		-- check for room in the output area here
 	end
 	
 	if recipe == nil then
 		-- we're not cooking anything.
 		cook_time = 0
 	else
-		if cook_time >= recipe.time then
+		local continue = true
+		while cook_time >= recipe.time do
 			-- produce product
-			-- check if we can make more. Loop?
-			cook_time = cook_time - recipe.time
+			local output = crafting.count_list_add(recipe.output, recipe.returns)
+			if crafting.add_items_if_room(inv, "output", output) then
+				crafting.remove_items(inv, "input", recipe.input)
+				cook_time = cook_time - recipe.time
+				burn_time = burn_time - recipe.time
+				minetest.debug("items outputted")
+			else
+				-- no room for items in the output
+				cook_time = 0
+				continue = false
+			end
+		end
+		if continue then
+			minetest.get_node_timer(pos):start(1.0)
 		end
 	end
 	
 	
+	minetest.debug("Cook time, burn time", tostring(cook_time), tostring(burn_time))	
+	--minetest.debug(dump(recipe))
 	
-	
-	minetest.debug(dump(recipe))
-
-	
+	meta:set_float("burn_time", burn_time)
+	meta:set_float("cook_time", cook_time)	
 end
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
