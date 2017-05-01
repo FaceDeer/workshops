@@ -3,14 +3,23 @@ local S, NS = dofile(MP.."/intllib.lua")
 
 local function get_formspec()
 	return table.concat({
-		"size[10,9]",
+		"size[10,9.2]",
+		default.gui_bg,
+		default.gui_bg_img,
+		default.gui_slots,
+
 		"list[context;input;0,0.25;4,2;]",
 		"list[context;fuel;0,2.75;4,2]",
-		"list[context;products;6,0.25;4,2;]",
+		
+		"image[4.5,0.7;1,1;gui_furnace_arrow_bg.png^[transformR270]",
 		"list[context;target;4.5,2;1,1;]",
-		"list[context;output;6,2.75;4,2;]",
+		"image[4.5,3.3;1,1;default_furnace_fire_bg.png]",
+
+		"list[context;output;6,0.25;4,2;]",
+		"list[context;products;6,2.75;4,2;]",
+
 		"list[current_player;main;1,5;8,1;0]",
-		"list[current_player;main;1,6;8,3;8]",
+		"list[current_player;main;1,6.2;8,3;8]",
 	})
 end
 
@@ -20,8 +29,39 @@ local function refresh_output(inv)
 end
 
 
-local function attempt_start(pos)
-	minetest.debug("attempt start")
+local function smelter_timer(pos, elapsed)
+	local meta = minetest.get_meta(pos)
+	
+	local cook_time = meta:get_float("cook_time") or 0
+	local burn_time = meta:get_float("burn_time") or 0
+
+	burn_time = burn_time - elapsed
+	cook_time = cook_time + elapsed
+	
+	local inv = meta:get_inventory()
+	
+	local recipe
+	if not inv:is_empty("target") then
+		recipe = crafting.get_crafting_result("smelter", inv:get_list("input"), inv:get_stack("target", 1))
+	end
+	
+	if recipe == nil then
+		-- we're not cooking anything.
+		cook_time = 0
+	else
+		if cook_time >= recipe.time then
+			-- produce product
+			-- check if we can make more. Loop?
+			cook_time = cook_time - recipe.time
+		end
+	end
+	
+	
+	
+	
+	minetest.debug(dump(recipe))
+
+	
 end
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
@@ -46,7 +86,7 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 			--place an imaginary item into the target slot
 			local inv = minetest.get_inventory({type="node", pos=pos})
 			inv:set_stack(listname, index, stack:take_item(1))
-			attempt_start(pos)
+			smelter_timer(pos, 0)
 		end
 		return 0
 	elseif listname == "products" or listname == "output" then
@@ -122,7 +162,7 @@ minetest.register_node("workshops:smelter", {
 		if lname == "input" then
 			refresh_output(meta:get_inventory())
 		end
-		attempt_start(pos)
+		smelter_timer(pos, 0)
 	end,
 
 	can_dig = function(pos, player)
@@ -130,5 +170,7 @@ minetest.register_node("workshops:smelter", {
 		local inv = meta:get_inventory()
 		return inv:is_empty("output") and inv:is_empty("fuel") and inv:is_empty("input")
 	end,
+	
+	on_timer = smelter_timer,
 })
 
