@@ -23,21 +23,19 @@ local function get_formspec()
 	})
 end
 
-local function refresh_output(inv)
+local function refresh_products(inv)
 	local craftable = crafting.get_craftable_items("smelter", inv:get_list("input"))
 	inv:set_list("products", craftable)
 end
 
-
 local function smelter_timer(pos, elapsed)
 	local meta = minetest.get_meta(pos)
+	local inv = meta:get_inventory()
 	
 	local cook_time = meta:get_float("cook_time") or 0
 	local burn_time = meta:get_float("burn_time") or 0
 
 	cook_time = cook_time + elapsed
-	
-	local inv = meta:get_inventory()
 	
 	local recipe
 	if not inv:is_empty("target") then
@@ -49,11 +47,11 @@ local function smelter_timer(pos, elapsed)
 		-- we're not cooking anything.
 		cook_time = 0
 	else
-		local continue = true
 		while cook_time >= recipe.time do
 			-- produce product
 			local output = crafting.count_list_add(recipe.output, recipe.returns)
-			if crafting.add_items_if_room(inv, "output", output) then
+			if crafting.room_for_items(inv, "output", output) then
+				crafting.add_items(inv, "output", output)
 				crafting.remove_items(inv, "input", recipe.input)
 				cook_time = cook_time - recipe.time
 				burn_time = burn_time - recipe.time
@@ -61,18 +59,15 @@ local function smelter_timer(pos, elapsed)
 			else
 				-- no room for items in the output
 				cook_time = 0
-				continue = false
 			end
 		end
-		if continue then
-			minetest.get_node_timer(pos):start(1.0)
-		end
+		minetest.get_node_timer(pos):start(1.0)
 	end
 	
-	
 	minetest.debug("Cook time, burn time", tostring(cook_time), tostring(burn_time))	
-	--minetest.debug(dump(recipe))
-	
+
+	-- update formspec
+
 	meta:set_float("burn_time", burn_time)
 	meta:set_float("cook_time", cook_time)	
 end
@@ -161,19 +156,26 @@ minetest.register_node("workshops:smelter", {
 	
 	on_metadata_inventory_move = function(pos, flist, fi, tlist, ti, no, player)
 		local meta = minetest.get_meta(pos)
+		if tlist == "input" then
+			refresh_products(meta:get_inventory())
+		elseif flist == "output" then
+			--smelter_timer(pos, 0)
+		end
 	end,
 
 	on_metadata_inventory_take = function(pos, lname, i, stack, player)
 		local meta = minetest.get_meta(pos)
 		if lname == "input" then
-			refresh_output(meta:get_inventory())
+			refresh_products(meta:get_inventory())
+		elseif lname == "output" then
+			--smelter_timer(pos, 0)
 		end
 	end,
 
 	on_metadata_inventory_put = function(pos, lname, i, stack, player)
 		local meta = minetest.get_meta(pos)
 		if lname == "input" then
-			refresh_output(meta:get_inventory())
+			refresh_products(meta:get_inventory())
 		end
 		smelter_timer(pos, 0)
 	end,
