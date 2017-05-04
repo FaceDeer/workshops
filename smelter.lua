@@ -124,7 +124,7 @@ local function smelter_timer(pos, elapsed)
 			end
 		end
 		cook_percent = math.floor((cook_time / recipe.time) * 100)
-		minetest.get_node_timer(pos):start(0.1)
+		minetest.get_node_timer(pos):start(1)
 	end
 	
 	minetest.debug("Cook time, burn time", tostring(cook_time), tostring(burn_time))	
@@ -242,36 +242,17 @@ minetest.register_node("workshops:smelter", {
 	on_receive_fields = function(pos, formname, fields, sender)
 		local meta = minetest.get_meta(pos)
 		local product_list = minetest.deserialize(meta:get_string("product_list"))
-		if fields.target ~= nil then
-			meta:set_string("target_item", "")
-			refresh_formspec(meta)
-		elseif fields.product_1 ~= nil then
-			meta:set_string("target_item", product_list[1])
-			refresh_formspec(meta)
-		elseif fields.product_2 ~= nil then
-			meta:set_string("target_item", product_list[2])
-			refresh_formspec(meta)
-		elseif fields.product_3 ~= nil then
-			meta:set_string("target_item", product_list[3])
-			refresh_formspec(meta)
-		elseif fields.product_4 ~= nil then
-			meta:set_string("target_item", product_list[4])
-			refresh_formspec(meta)
-		elseif fields.product_5 ~= nil then
-			meta:set_string("target_item", product_list[5])
-			refresh_formspec(meta)
-		elseif fields.product_6 ~= nil then
-			meta:set_string("target_item", product_list[6])
-			refresh_formspec(meta)
-		elseif fields.product_7 ~= nil then
-			meta:set_string("target_item", product_list[7])
-			refresh_formspec(meta)
-		elseif fields.product_8 ~= nil then
-			meta:set_string("target_item", product_list[8])
-			refresh_formspec(meta)
+
+		for field, _ in pairs(fields) do
+			if field == "target" then
+				meta:set_string("target_item", "")
+			elseif string.sub(field, 1, 8) == "product_" then
+				local new_target = product_list[tonumber(string.sub(field, 9))]
+				meta:set_string("target_item", new_target)
+				refresh_formspec(meta)
+			end
 		end
 		smelter_timer(pos, 0)
-
 	end,
 
 	on_timer = smelter_timer,
