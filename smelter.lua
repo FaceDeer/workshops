@@ -1,11 +1,17 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
-local function refresh_formspec(meta, item_percent, fuel_percent)
+local function refresh_formspec(meta)
 
-	-- TODO: temporary, recalculate from metadata
-	if item_percent == nil then item_percent = 0 end
-	if fuel_percent == nil then fuel_percent = 0 end
+	local cook_time = meta:get_float("cook_time") or 0.0
+	local total_cook_time = meta:get_float("total_cook_time") or 0.0
+	local burn_time = meta:get_float("burn_time") or 0.0
+	local total_burn_time = meta:get_float("total_burn_time") or 0.0
+
+	local item_percent
+	if total_cook_time > 0 then item_percent = math.floor((math.min(cook_time, total_cook_time) / total_cook_time) * 100) else item_percent = 0 end
+	local burn_percent
+	if total_burn_time > 0 then burn_percent = math.floor((math.min(burn_time, total_burn_time) / total_burn_time) * 100) else burn_percent = 0 end
 
 	local product_list = minetest.deserialize(meta:get_string("product_list"))
 	
@@ -19,7 +25,7 @@ local function refresh_formspec(meta, item_percent, fuel_percent)
 		"list[context;fuel;0,2.75;4,2]",
 		
 		"image[4.5,0.7;1,1;gui_furnace_arrow_bg.png^[lowpart:"..(item_percent)..":gui_furnace_arrow_fg.png^[transformR270]",
-		"image[4.5,3.3;1,1;default_furnace_fire_bg.png^[lowpart:"..(fuel_percent)..":default_furnace_fire_fg.png]",
+		"image[4.5,3.3;1,1;default_furnace_fire_bg.png^[lowpart:"..(burn_percent)..":default_furnace_fire_fg.png]",
 
 		"list[context;output;6,0.25;4,2;]",
 
@@ -38,7 +44,8 @@ local function refresh_formspec(meta, item_percent, fuel_percent)
 		if product_list[i] then
 			formspec = formspec .. "item_image_button[" ..
 			6 + (i-1)%4 .. "," .. 2.75 + math.floor((i-1)/4) ..
-			";1,1;" .. product_list[i] .. ";product_".. i ..";]"
+			";1,1;" .. product_list[i].name .. ";product_".. i ..
+			";\n\n       " .. product_list[i].count .. "]"
 		else
 			formspec = formspec .. "item_image_button[" ..
 			6 + (i-1)%4 .. "," .. 2.75 + math.floor((i-1)/4) ..
@@ -54,7 +61,7 @@ local function refresh_products(meta)
 	local craftable = crafting.get_craftable_items("smelter", inv:get_list("input"), false, true)
 	local product_list = {}
 	for _, craft in pairs(craftable) do
-		table.insert(product_list, craft:get_name())
+		table.insert(product_list, craft:to_table())
 	end
 	meta:set_string("product_list", minetest.serialize(product_list))
 end
@@ -65,75 +72,76 @@ local function smelter_timer(pos, elapsed)
 	local inv = meta:get_inventory()
 	
 	local cook_time = meta:get_float("cook_time") or 0.0
+	local total_cook_time = meta:get_float("total_cook_time") or 0.0
 	local burn_time = meta:get_float("burn_time") or 0.0
-	local fuel_time = meta:get_float("fuel_time") or 0.0
+	local total_burn_time = meta:get_float("total_burn_time") or 0.0
 
 	local target_item = meta:get_string("target_item")
 
 	cook_time = cook_time + elapsed
 	burn_time = burn_time - elapsed
-	local cook_percent = 0
 	
 	local recipe
+	local room_for_items = false
+	local output
 	if target_item ~= "" then
 		recipe = crafting.get_crafting_result("smelter", inv:get_list("input"), ItemStack({name=target_item, count=1}))
-		if not recipe or not crafting.room_for_items(inv, "output", crafting.count_list_add(recipe.output, recipe.returns)) then
-			recipe = nil
+		if recipe then
+			output = crafting.count_list_add(recipe.output, recipe.returns)
+			room_for_items = crafting.room_for_items(inv, "output", output)
+			total_cook_time = recipe.time
 		end
 	end
 	
-	if recipe == nil then
+	if recipe == nil or not room_for_items then
 		-- we're not cooking anything.
-		cook_time = 0
+		cook_time = 0.0
+		if burn_time < 0 then burn_time = 0 end
+		minetest.get_node_timer(pos):stop()
 	else
-		while cook_time >= recipe.time do
-			-- produce product
-			local output = crafting.count_list_add(recipe.output, recipe.returns)
-			local room_for_items = crafting.room_for_items(inv, "output", output)
-			if room_for_items then
-				if burn_time > 0 then
-					crafting.add_items(inv, "output", output)
-					crafting.remove_items(inv, "input", recipe.input)
-					cook_time = cook_time - recipe.time
-				else
-					-- burn some fuel, if possible.
-					local fuel_recipes = crafting.get_fuels(inv:get_list("fuel"))
-					local longest_burning
-					for _, fuel_recipe in pairs(fuel_recipes) do
-						if longest_burning == nil or longest_burning.burntime < fuel_recipe.burntime then
-							longest_burning = fuel_recipe
-						end
-					end
-					
-					if longest_burning then
-						fuel_time = longest_burning.burntime
-						burn_time = burn_time + fuel_time
-						inv:remove_item("fuel", ItemStack({name = longest_burning.name, count = 1}))
-					else
-						--out of fuel
-						cook_time = 0
-						cook_percent = 0
-						break
+		while true do
+			if burn_time < 0 then
+				-- burn some fuel, if possible.
+				local fuel_recipes = crafting.get_fuels(inv:get_list("fuel"))
+				local longest_burning
+				for _, fuel_recipe in pairs(fuel_recipes) do
+					if longest_burning == nil or longest_burning.burntime < fuel_recipe.burntime then
+						longest_burning = fuel_recipe
 					end
 				end
+						
+				if longest_burning then
+					total_burn_time = longest_burning.burntime
+					burn_time = burn_time + total_burn_time
+					inv:remove_item("fuel", ItemStack({name = longest_burning.name, count = 1}))
+				else
+					--out of fuel
+					cook_time = 0
+					if burn_time < 0 then burn_time = 0 end
+					break
+				end
+			elseif cook_time >= recipe.time then
+				-- produce product
+				crafting.add_items(inv, "output", output)
+				crafting.remove_items(inv, "input", recipe.input)
+				cook_time = cook_time - recipe.time
+				minetest.get_node_timer(pos):start(1)
+				break
 			else
-				-- no room for items in the output
-				cook_time = 0
-				cook_percent = 0
+				-- if we get here there's burning fuel but cook time hasn't reached recipe time yet.
+				-- Do nothing this round.
+				minetest.get_node_timer(pos):start(1)
 				break
 			end
 		end
-		cook_percent = math.floor((cook_time / recipe.time) * 100)
-		minetest.get_node_timer(pos):start(1)
 	end
-	
-	minetest.debug("Cook time, burn time", tostring(cook_time), tostring(burn_time))	
-
-	refresh_formspec(meta, cook_percent, 0)
 
 	meta:set_float("burn_time", burn_time)
-	meta:set_float("fuel_time", fuel_time)
+	meta:set_float("total_burn_time", total_burn_time)
 	meta:set_float("cook_time", cook_time)	
+	meta:set_float("total_cook_time", total_cook_time)	
+
+	refresh_formspec(meta)
 end
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
@@ -201,7 +209,7 @@ minetest.register_node("workshops:smelter", {
 		inv:set_size("output", 2*4) -- holds output product
 		meta:set_string("product_list", minetest.serialize({}))
 		meta:set_string("target", "")
-		refresh_formspec(meta, 0, 0)
+		refresh_formspec(meta)
 	end,
 	
 	allow_metadata_inventory_put = allow_metadata_inventory_put,	
@@ -219,7 +227,7 @@ minetest.register_node("workshops:smelter", {
 		local meta = minetest.get_meta(pos)
 		if lname == "input" then
 			refresh_products(meta)
-			refresh_formspec(meta, 0, 0)
+			refresh_formspec(meta)
 		elseif lname == "output" then
 			smelter_timer(pos, 0)
 		end
@@ -247,7 +255,7 @@ minetest.register_node("workshops:smelter", {
 			if field == "target" then
 				meta:set_string("target_item", "")
 			elseif string.sub(field, 1, 8) == "product_" then
-				local new_target = product_list[tonumber(string.sub(field, 9))]
+				local new_target = product_list[tonumber(string.sub(field, 9))].name
 				meta:set_string("target_item", new_target)
 				refresh_formspec(meta)
 			end
