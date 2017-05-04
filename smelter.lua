@@ -1,7 +1,7 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
-local function get_formspec()
+local function get_formspec(item_percent, fuel_percent)
 	return table.concat({
 		"size[10,9.2]",
 		default.gui_bg,
@@ -11,9 +11,9 @@ local function get_formspec()
 		"list[context;input;0,0.25;4,2;]",
 		"list[context;fuel;0,2.75;4,2]",
 		
-		"image[4.5,0.7;1,1;gui_furnace_arrow_bg.png^[transformR270]",
+		"image[4.5,0.7;1,1;gui_furnace_arrow_bg.png^[lowpart:"..(item_percent)..":gui_furnace_arrow_fg.png^[transformR270]",
 		"list[context;target;4.5,2;1,1;]",
-		"image[4.5,3.3;1,1;default_furnace_fire_bg.png]",
+		"image[4.5,3.3;1,1;default_furnace_fire_bg.png^[lowpart:"..(fuel_percent)..":default_furnace_fire_fg.png]",
 
 		"list[context;output;6,0.25;4,2;]",
 		"list[context;products;6,2.75;4,2;]",
@@ -32,15 +32,20 @@ local function smelter_timer(pos, elapsed)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	
-	local cook_time = meta:get_float("cook_time") or 0
-	local burn_time = meta:get_float("burn_time") or 0
+	local cook_time = meta:get_float("cook_time") or 0.0
+	local burn_time = meta:get_float("burn_time") or 0.0
+	local fuel_time = meta:get_float("fuel_time") or 0.0
 
 	cook_time = cook_time + elapsed
+	burn_time = burn_time - elapsed
+	local cook_percent = 0
 	
 	local recipe
 	if not inv:is_empty("target") then
 		recipe = crafting.get_crafting_result("smelter", inv:get_list("input"), inv:get_stack("target", 1))
-		-- check for room in the output area here
+		if not recipe or not crafting.room_for_items(inv, "output", crafting.count_list_add(recipe.output, recipe.returns)) then
+			recipe = nil
+		end
 	end
 	
 	if recipe == nil then
@@ -50,25 +55,53 @@ local function smelter_timer(pos, elapsed)
 		while cook_time >= recipe.time do
 			-- produce product
 			local output = crafting.count_list_add(recipe.output, recipe.returns)
-			if crafting.room_for_items(inv, "output", output) then
-				crafting.add_items(inv, "output", output)
-				crafting.remove_items(inv, "input", recipe.input)
-				cook_time = cook_time - recipe.time
-				burn_time = burn_time - recipe.time
-				minetest.debug("items outputted")
+			local room_for_items = crafting.room_for_items(inv, "output", output)
+			if room_for_items then
+				if burn_time > 0 then
+					crafting.add_items(inv, "output", output)
+					crafting.remove_items(inv, "input", recipe.input)
+					cook_time = cook_time - recipe.time
+					minetest.debug("items outputted")
+				else
+					-- burn some fuel, if possible.
+					local fuel_recipes = crafting.get_fuels(inv:get_list("fuel"))
+					minetest.debug("recipes", dump(fuel_recipes))
+					local longest_burning
+					for _, fuel_recipe in pairs(fuel_recipes) do
+						if longest_burning == nil or longest_burning.burntime < fuel_recipe.burntime then
+							longest_burning = fuel_recipe
+						end
+					end
+					
+					if longest_burning then
+						minetest.debug("longest_burning",dump(longest_burning))
+						fuel_time = longest_burning.burntime
+						burn_time = burn_time + fuel_time
+						inv:remove_item("fuel", ItemStack({name = longest_burning.name, count = 1}))
+					else
+						--out of fuel
+						cook_time = 0
+						cook_percent = 0
+						break
+					end
+				end
 			else
 				-- no room for items in the output
 				cook_time = 0
+				cook_percent = 0
+				break
 			end
 		end
-		minetest.get_node_timer(pos):start(1.0)
+		cook_percent = math.floor((cook_time / recipe.time) * 100)
+		minetest.get_node_timer(pos):start(0.1)
 	end
 	
 	minetest.debug("Cook time, burn time", tostring(cook_time), tostring(burn_time))	
 
-	-- update formspec
+	meta:set_string("formspec", get_formspec(cook_percent, 0))
 
 	meta:set_float("burn_time", burn_time)
+	meta:set_float("fuel_time", fuel_time)
 	meta:set_float("cook_time", cook_time)	
 end
 
@@ -147,7 +180,7 @@ minetest.register_node("workshops:smelter", {
 		inv:set_size("target", 1) -- Item to actually make from the inputs
 		inv:set_size("products", 2*4) -- potential products from the given inputs
 		inv:set_size("output", 2*4) -- holds output product
-		meta:set_string("formspec", get_formspec())
+		meta:set_string("formspec", get_formspec(0,0))
 	end,
 	
 	allow_metadata_inventory_put = allow_metadata_inventory_put,	
