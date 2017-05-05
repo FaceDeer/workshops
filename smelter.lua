@@ -2,7 +2,6 @@ local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
 local function refresh_formspec(meta)
-
 	local cook_time = meta:get_float("cook_time") or 0.0
 	local total_cook_time = meta:get_float("total_cook_time") or 0.0
 	local burn_time = meta:get_float("burn_time") or 0.0
@@ -14,6 +13,8 @@ local function refresh_formspec(meta)
 	if total_burn_time > 0 then burn_percent = math.floor((math.min(burn_time, total_burn_time) / total_burn_time) * 100) else burn_percent = 0 end
 
 	local product_list = minetest.deserialize(meta:get_string("product_list"))
+
+	local product_page = meta:get_int("product_page") or 0
 	
 	local formspec = table.concat({
 		"size[10,9.2]",
@@ -40,16 +41,17 @@ local function refresh_formspec(meta)
 		formspec = formspec .. "item_image_button[4.5,2;1,1;;;]"
 	end
 
-	for i = 1,8 do
-		if product_list[i] then
+	for i = 1, 8 do
+		local current_item = product_list[i + product_page*8]
+		if current_item then
 			formspec = formspec .. "item_image_button[" ..
 			6 + (i-1)%4 .. "," .. 2.75 + math.floor((i-1)/4) ..
-			";1,1;" .. product_list[i].name .. ";product_".. i ..
-			";\n\n       " .. product_list[i].count .. "]"
+			";1,1;" .. current_item.name .. ";product_".. i ..
+			";\n\n       " .. current_item.count .. "]"
 		else
 			formspec = formspec .. "item_image_button[" ..
 			6 + (i-1)%4 .. "," .. 2.75 + math.floor((i-1)/4) ..
-			";1,1;;product_".. i ..";]"
+			";1,1;;empty;]"
 		end
 	end
 
@@ -65,7 +67,6 @@ local function refresh_products(meta)
 	end
 	meta:set_string("product_list", minetest.serialize(product_list))
 end
-
 
 local function smelter_timer(pos, elapsed)
 	local meta = minetest.get_meta(pos)
@@ -254,9 +255,12 @@ minetest.register_node("workshops:smelter", {
 		for field, _ in pairs(fields) do
 			if field == "target" then
 				meta:set_string("target_item", "")
+				meta:set_float("cook_time", 0.0)
+				meta:set_float("total_cook_time", 0.0)
 			elseif string.sub(field, 1, 8) == "product_" then
 				local new_target = product_list[tonumber(string.sub(field, 9))].name
 				meta:set_string("target_item", new_target)
+				meta:set_float("cook_time", 0.0)
 				refresh_formspec(meta)
 			end
 		end
@@ -266,3 +270,13 @@ minetest.register_node("workshops:smelter", {
 	on_timer = smelter_timer,
 })
 
+minetest.register_craftitem("workshops:smelter_guide", {
+	description = S("Crafting Guide (Smelter)"),
+	inventory_image = "crafting_guide_contents.png^(crafting_guide_cover.png^[colorize:#ff120088)",
+	wield_image = "crafting_guide_contents.png^(crafting_guide_cover.png^[colorize:#ff120088)",
+	stack_max = 1,
+	groups = {book = 1},
+	on_use = function(itemstack, user)
+		crafting.crafting_guide_on_use(user, "smelter")
+	end,
+})
