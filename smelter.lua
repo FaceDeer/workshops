@@ -114,7 +114,19 @@ local function smelter_timer(pos, elapsed)
 				if longest_burning then
 					total_burn_time = longest_burning.burntime
 					burn_time = burn_time + total_burn_time
-					inv:remove_item("fuel", ItemStack({name = longest_burning.name, count = 1}))
+					local success = true
+					if longest_burning.returns then
+						success = crafting.add_items_if_room(inv, "output", longest_burning.returns) and
+							crafting.room_for_items(inv, "output", output)						
+					end
+					if success then					
+						inv:remove_item("fuel", ItemStack({name = longest_burning.name, count = 1}))
+					else
+						--no room for both output and fuel reside
+						cook_time = 0
+						if burn_time < 0 then burn_time = 0 end
+						break
+					end
 				else
 					--out of fuel
 					cook_time = 0
