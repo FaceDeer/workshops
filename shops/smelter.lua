@@ -291,6 +291,6 @@ minetest.register_craftitem("workshops:smelter_guide", {
 	stack_max = 1,
 	groups = {book = 1},
 	on_use = function(itemstack, user)
-		crafting.show_crafting_guide(user, "smelter")
+		crafting.show_crafting_guide("smelter", user)
 	end,
 })
