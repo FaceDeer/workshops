@@ -90,7 +90,7 @@ local function smelter_timer(pos, elapsed)
 		if recipe then
 			output = crafting.count_list_add(recipe.output, recipe.returns)
 			room_for_items = crafting.room_for_items(inv, "output", output)
-			total_cook_time = recipe.time
+			total_cook_time = recipe.cooktime
 		end
 	end
 	
@@ -103,7 +103,7 @@ local function smelter_timer(pos, elapsed)
 		while true do
 			if burn_time < 0 then
 				-- burn some fuel, if possible.
-				local fuel_recipes = crafting.get_fuels(inv:get_list("fuel"))
+				local fuel_recipes = crafting.get_fuels("fuel", inv:get_list("fuel"))
 				local longest_burning
 				for _, fuel_recipe in pairs(fuel_recipes) do
 					if longest_burning == nil or longest_burning.burntime < fuel_recipe.burntime then
@@ -119,8 +119,10 @@ local function smelter_timer(pos, elapsed)
 						success = crafting.add_items_if_room(inv, "output", longest_burning.returns) and
 							crafting.room_for_items(inv, "output", output)						
 					end
-					if success then					
-						inv:remove_item("fuel", ItemStack({name = longest_burning.name, count = 1}))
+					if success then
+						for item, count in pairs(longest_burning.input) do
+							inv:remove_item("fuel", ItemStack({name = item, count = count}))
+						end
 					else
 						--no room for both output and fuel reside
 						cook_time = 0
@@ -133,11 +135,11 @@ local function smelter_timer(pos, elapsed)
 					if burn_time < 0 then burn_time = 0 end
 					break
 				end
-			elseif cook_time >= recipe.time then
+			elseif cook_time >= recipe.cooktime then
 				-- produce product
 				crafting.add_items(inv, "output", output)
 				crafting.remove_items(inv, "input", recipe.input)
-				cook_time = cook_time - recipe.time
+				cook_time = cook_time - recipe.cooktime
 				minetest.get_node_timer(pos):start(1)
 				break
 			else
@@ -169,7 +171,7 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 			return 0
 		end
 	elseif listname == "fuel" then
-		if crafting.is_fuel(stack:get_name()) then
+		if crafting.is_fuel("fuel", stack:get_name()) then
 			return stack:get_count()
 		else
 			return 0
