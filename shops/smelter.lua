@@ -236,6 +236,7 @@ minetest.register_node("workshops:smelter", {
 		if tlist == "input" then
 			refresh_products(meta)
 		end
+		smelter_timer(pos, 0)
 	end,
 
 	on_metadata_inventory_take = function(pos, lname, i, stack, player)
@@ -286,8 +287,8 @@ minetest.register_node("workshops:smelter", {
 
 minetest.register_craftitem("workshops:smelter_guide", {
 	description = S("Crafting Guide (Smelter)"),
-	inventory_image = "crafting_guide_contents.png^(crafting_guide_cover.png^[colorize:#ff120088)",
-	wield_image = "crafting_guide_contents.png^(crafting_guide_cover.png^[colorize:#ff120088)",
+	inventory_image = "crafting_guide_cover.png^[colorize:#ff120088^crafting_guide_contents.png",
+	wield_image = "crafting_guide_cover.png^[colorize:#ff120088^crafting_guide_contents.png",
 	stack_max = 1,
 	groups = {book = 1},
 	on_use = function(itemstack, user)
