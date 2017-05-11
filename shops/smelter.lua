@@ -204,8 +204,8 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 		allow_metadata_inventory_take(pos, from_list, from_index, stack, player))
 end
 
-minetest.register_node("workshops:smelter", {
-	description = S("Smelter"),
+minetest.register_node("workshops:smelting_furnace", {
+	description = S("Smelting Furnace"),
 	drawtype = "normal",
 	tiles = {
 		"default_furnace_top.png", "default_furnace_bottom.png",
@@ -295,3 +295,18 @@ minetest.register_craftitem("workshops:smelter_guide", {
 		crafting.show_crafting_guide("smelter", user)
 	end,
 })
+
+
+
+minetest.register_node("workshops:crucible", {
+	description = S("Crucible"),
+	tiles = {"image.png"},
+	groups = {workshops_smelter = 2, oddly_breakable_by_hand = 1},
+})
+
+minetest.register_node("workshops:rock_grinder", {
+	description = S("Rock Grinder"),
+	tiles = {"image.png"},
+	groups = {workshops_smelter = 1, oddly_breakable_by_hand = 1},
+})
+
