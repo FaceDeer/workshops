@@ -307,8 +307,8 @@ minetest.register_node("workshops:crucible", {
 		type = "fixed",
 		fixed = {
 			{-0.375, -0.1875, -0.375, 0.375, 0.375, -0.25}, -- body
-			{-0.5, -0.5, -0.125, -0.375, 0.3125, 0.125}, -- support1
-			{0.375, -0.5, -0.125, 0.5, 0.3125, 0.125}, -- support2
+			{-0.5, -0.5, -0.125, -0.375, 0.25, 0.125}, -- support1
+			{0.375, -0.5, -0.125, 0.5, 0.25, 0.125}, -- support2
 			{-0.375, -0.1875, 0.25, 0.375, 0.5, 0.375}, -- rim1
 			{-0.375, 0.375, -0.375, -0.0625, 0.5, -0.25}, -- rim2
 			{0.25, -0.1875, -0.25, 0.375, 0.5, 0.25}, -- rim3
@@ -320,6 +320,40 @@ minetest.register_node("workshops:crucible", {
 			{-0.25, -0.3125, -0.25, 0.25, -0.1875, 0.25}, -- bottom
 		}
 	},
+
+	on_punch = function(pos, node, player, pointed_thing)
+		minetest.swap_node(pos, {name="workshops:crucible_tipped", param2=node.param2})
+	end,
+})
+
+minetest.register_node("workshops:crucible_tipped", {
+	description = S("Crucible"),
+	tiles = {"default_furnace_top.png"},
+	groups = {workshops_smelter = 2, oddly_breakable_by_hand = 1},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.375, -0.3125, -0.25, 0.375, -0.1875, 0.3125}, -- body
+			{-0.5, -0.5, -0.125, -0.375, 0.25, 0.125}, -- support1
+			{0.375, -0.5, -0.125, 0.5, 0.25, 0.125}, -- support2
+			{-0.375, 0.3125, -0.375, 0.375, 0.4375, 0.3125}, -- rim1
+			{-0.375, -0.3125, -0.375, -0.0625, -0.1875, -0.25}, -- rim2
+			{0.25, -0.1875, -0.375, 0.375, 0.3125, 0.3125}, -- rim3
+			{-0.375, -0.1875, -0.375, -0.25, 0.3125, 0.3125}, -- rim4
+			{0.0625, -0.3125, -0.375, 0.375, -0.1875, -0.25}, -- rim5
+			{-0.1875, -0.4375, -0.25, 0.1875, -0.3125, -0.125}, -- spout1
+			{0.0625, -0.4375, -0.375, 0.1875, -0.3125, -0.25}, -- spout2
+			{-0.1875, -0.4375, -0.375, -0.0625, -0.3125, -0.25}, -- spout3
+			{-0.25, -0.1875, 0.3125, 0.25, 0.3125, 0.4375}, -- bottom
+		}
+	},
+	
+	on_punch = function(pos, node, player, pointed_thing)
+		minetest.swap_node(pos, {name="workshops:crucible", param2=node.param2})
+	end,
 })
 
 minetest.register_node("workshops:rock_grinder", {
