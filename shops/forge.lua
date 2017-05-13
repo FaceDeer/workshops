@@ -60,6 +60,54 @@ minetest.register_node("workshops:forge", {
 
 minetest.register_node("workshops:bellows", {
 	description = S("Bellows"),
-	tiles = {"image.png"},
+	tiles = {"default_furnace_top.png"},
 	groups = {workshops_forge = 1, workshops_smelter = 1, oddly_breakable_by_hand = 1},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, 0.375, -0.25, 0.5, 0.5, -0.125}, -- frametop
+			{0.375, -0.5, -0.25, 0.5, 0.375, -0.125}, -- support1
+			{-0.5, -0.5, -0.25, -0.375, 0.375, -0.125}, -- support2
+			{-0.3125, -0.375, -0.25, 0.3125, 0.1875, -0.0625}, -- NodeBox4
+			{-0.25, -0.375, -0.0625, 0.25, 0.0625, 0.125}, -- NodeBox5
+			{-0.1875, -0.375, 0.125, 0.1875, -0.0625, 0.3125}, -- NodeBox6
+			{-0.125, -0.375, 0.3125, 0.125, -0.1875, 0.5}, -- NodeBox7
+			{-0.375, -0.375, -0.4375, 0.375, 0.3125, -0.25}, -- NodeBox8
+			{-0.0625, 0.3125, -0.5, 0.0625, 0.375, -0.3125}, -- NodeBox9
+		}
+	},
+	
+	on_punch = function(pos, node, player, pointed_thing)
+		minetest.swap_node(pos, {name="workshops:bellows_compressed", param2=node.param2})
+	end,
+})
+
+minetest.register_node("workshops:bellows_compressed", {
+	description = S("Bellows"),
+	tiles = {"default_furnace_top.png"},
+	groups = {workshops_forge = 1, workshops_smelter = 1, oddly_breakable_by_hand = 1},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, 0.375, -0.25, 0.5, 0.5, -0.125}, -- frametop
+			{0.375, -0.5, -0.25, 0.5, 0.375, -0.125}, -- support1
+			{-0.5, -0.5, -0.25, -0.375, 0.375, -0.125}, -- support2
+			{-0.3125, -0.375, -0.25, 0.3125, -0.1875, -0.0625}, -- NodeBox4
+			{-0.25, -0.375, -0.0625, 0.25, -0.1875, 0.125}, -- NodeBox5
+			{-0.1875, -0.375, 0.125, 0.1875, -0.1875, 0.3125}, -- NodeBox6
+			{-0.125, -0.375, 0.3125, 0.125, -0.1875, 0.5}, -- NodeBox7
+			{-0.375, -0.375, -0.4375, 0.375, -0.1875, -0.25}, -- NodeBox8
+			{-0.0625, -0.1875, -0.5, 0.0625, -0.125, -0.3125}, -- NodeBox9
+		}
+	},
+	
+	on_punch = function(pos, node, player, pointed_thing)
+		minetest.swap_node(pos, {name="workshops:bellows", param2=node.param2})
+	end,
 })
