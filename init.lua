@@ -8,7 +8,6 @@ dofile(MP.."/shops/masonry.lua")
 dofile(MP.."/shops/forge.lua")
 dofile(MP.."/shops/kitchen.lua")
 
-
 local metal_ingots =
 {
 	['default:steel_ingot'] = true,
@@ -34,7 +33,7 @@ end
 
 -- creates "recycling" recipes that allow items to be melted down for their metal content
 -- doesn't otherwise disturb the crafting systems.
-crafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
+simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 	if legacy_method ~= "normal" then 
 		return
 	end
@@ -69,12 +68,12 @@ crafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 		recycle_recipe.output = {[max_item] = max_count}
 		recycle_recipe.returns = metal_inputs
 		
-		crafting_lib.register("smelter", recycle_recipe)
+		simplecrafting_lib.register("smelter", recycle_recipe)
 	end
 end)
 
 -- appropriates recipes that output metal ingots for the smelter
-crafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
+simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 	if legacy_method ~= "cooking" then 
 		return
 	end
@@ -87,4 +86,4 @@ crafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 end)
 
 
-crafting_lib.import_legacy_recipes()
+simplecrafting_lib.import_legacy_recipes()

@@ -60,7 +60,7 @@ end
 
 local function refresh_products(meta)
 	local inv = meta:get_inventory()
-	local craftable = crafting_lib.get_craftable_items("smelter", inv:get_list("input"), false, true)
+	local craftable = simplecrafting_lib.get_craftable_items("smelter", inv:get_list("input"), false, true)
 	local product_list = {}
 	for _, craft in pairs(craftable) do
 		table.insert(product_list, craft:to_table())
@@ -86,10 +86,10 @@ local function smelter_timer(pos, elapsed)
 	local room_for_items = false
 	local output
 	if target_item ~= "" then
-		recipe = crafting_lib.get_crafting_result("smelter", inv:get_list("input"), ItemStack({name=target_item, count=1}))
+		recipe = simplecrafting_lib.get_crafting_result("smelter", inv:get_list("input"), ItemStack({name=target_item, count=1}))
 		if recipe then
-			output = crafting_lib.count_list_add(recipe.output, recipe.returns)
-			room_for_items = crafting_lib.room_for_items(inv, "output", output)
+			output = simplecrafting_lib.count_list_add(recipe.output, recipe.returns)
+			room_for_items = simplecrafting_lib.room_for_items(inv, "output", output)
 			total_cook_time = recipe.cooktime
 		end
 	end
@@ -103,7 +103,7 @@ local function smelter_timer(pos, elapsed)
 		while true do
 			if burn_time < 0 then
 				-- burn some fuel, if possible.
-				local fuel_recipes = crafting_lib.get_fuels("fuel", inv:get_list("fuel"))
+				local fuel_recipes = simplecrafting_lib.get_fuels("fuel", inv:get_list("fuel"))
 				local longest_burning
 				for _, fuel_recipe in pairs(fuel_recipes) do
 					if longest_burning == nil or longest_burning.burntime < fuel_recipe.burntime then
@@ -116,8 +116,8 @@ local function smelter_timer(pos, elapsed)
 					burn_time = burn_time + total_burn_time
 					local success = true
 					if longest_burning.returns then
-						success = crafting_lib.add_items_if_room(inv, "output", longest_burning.returns) and
-							crafting_lib.room_for_items(inv, "output", output)						
+						success = simplecrafting_lib.add_items_if_room(inv, "output", longest_burning.returns) and
+							simplecrafting_lib.room_for_items(inv, "output", output)						
 					end
 					if success then
 						for item, count in pairs(longest_burning.input) do
@@ -137,8 +137,8 @@ local function smelter_timer(pos, elapsed)
 				end
 			elseif cook_time >= recipe.cooktime then
 				-- produce product
-				crafting_lib.add_items(inv, "output", output)
-				crafting_lib.remove_items(inv, "input", recipe.input)
+				simplecrafting_lib.add_items(inv, "output", output)
+				simplecrafting_lib.remove_items(inv, "input", recipe.input)
 				cook_time = cook_time - recipe.cooktime
 				minetest.get_node_timer(pos):start(1)
 				break
@@ -165,13 +165,13 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	end
 	local meta = minetest.get_meta(pos)
 	if listname == "input" then
-		if crafting_lib.is_possible_input("smelter", stack:get_name()) then
+		if simplecrafting_lib.is_possible_input("smelter", stack:get_name()) then
 			return stack:get_count()
 		else
 			return 0
 		end
 	elseif listname == "fuel" then
-		if crafting_lib.is_fuel("fuel", stack:get_name()) then
+		if simplecrafting_lib.is_fuel("fuel", stack:get_name()) then
 			return stack:get_count()
 		else
 			return 0
@@ -292,7 +292,7 @@ minetest.register_craftitem("workshops:smelter_guide", {
 	stack_max = 1,
 	groups = {book = 1},
 	on_use = function(itemstack, user)
-		crafting_lib.show_crafting_guide("smelter", user)
+		simplecrafting_lib.show_crafting_guide("smelter", user)
 	end,
 })
 
