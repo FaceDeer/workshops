@@ -68,9 +68,17 @@ local function refresh_products(meta)
 	meta:set_string("product_list", minetest.serialize(product_list))
 end
 
+local function refresh_score(pos, meta)
+	local score = workshops.get_workshop_score(pos, 5, 2, "workshops_smelter", {"group:workshops_smelter"})
+	--meta:set_int("workshop_score", score)
+	return score
+end
+
 local function smelter_timer(pos, elapsed)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
+	
+	local score = refresh_score(pos, meta)
 	
 	local cook_time = meta:get_float("cook_time") or 0.0
 	local total_cook_time = meta:get_float("total_cook_time") or 0.0
@@ -103,7 +111,7 @@ local function smelter_timer(pos, elapsed)
 		while true do
 			if burn_time < 0 then
 				-- burn some fuel, if possible.
-				local fuel_recipes = simplecrafting_lib.get_fuels("fuel", inv:get_list("fuel"))
+				local fuel_recipes = simplecrafting_lib.get_fuels("smelter_fuel", inv:get_list("fuel"))
 				local longest_burning
 				for _, fuel_recipe in pairs(fuel_recipes) do
 					if longest_burning == nil or longest_burning.burntime < fuel_recipe.burntime then
@@ -171,7 +179,7 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 			return 0
 		end
 	elseif listname == "fuel" then
-		if simplecrafting_lib.is_fuel("fuel", stack:get_name()) then
+		if simplecrafting_lib.is_fuel("smelter_fuel", stack:get_name()) then
 			return stack:get_count()
 		else
 			return 0
@@ -214,7 +222,7 @@ minetest.register_node("workshops:smelting_furnace", {
 	},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, cracky=3},
+	groups = {oddly_breakable_by_hand = 1, cracky=3, workshops_smelter = 3},
 
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
@@ -330,6 +338,7 @@ minetest.register_node("workshops:crucible_tipped", {
 	description = S("Crucible"),
 	tiles = {"default_furnace_top.png"},
 	groups = {workshops_smelter = 2, oddly_breakable_by_hand = 1},
+	drop = "workshops:crucible",
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",

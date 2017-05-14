@@ -89,6 +89,7 @@ minetest.register_node("workshops:bellows_compressed", {
 	description = S("Bellows"),
 	tiles = {"default_furnace_top.png"},
 	groups = {workshops_forge = 1, workshops_smelter = 1, oddly_breakable_by_hand = 1},
+	drop = "workshops:bellows",
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
