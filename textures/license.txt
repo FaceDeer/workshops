@@ -1,0 +1,17 @@
+MIT/Public Domain/CC0 by FaceDeer:
+
+workshops_coal_ash.png
+workshops_coal_ash_block.png
+
+Zlib license from Moreblocks mod:
+workshops_table_saw_bottom.png
+workshops_table_saw_side.png
+workshops_table_saw_top.png
+
+WTFPL from myholeinthewall mod:
+workshops_drill_top.png
+workshops_drill_bottom.png
+workshops_drill_rside.png
+workshops_drill_lside.png
+workshops_drill_back.png
+workshops_drill_front.png

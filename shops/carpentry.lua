@@ -32,14 +32,55 @@ minetest.register_node("workshops:sawhorse", {
 
 minetest.register_node("workshops:table_saw", {
 	description = S("Table Saw"),
-	tiles = {"image.png"},
+	tiles = {"workshops_table_saw_top.png", "workshops_table_saw_bottom.png", "workshops_table_saw_side.png"},
 	groups = {workshops_carpentry = 2, oddly_breakable_by_hand = 1},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.4, -0.5, -0.4, -0.25, 0.375, -0.25}, -- Leg
+			{0.25, -0.5, 0.25, 0.4, 0.375, 0.4}, -- Leg
+			{-0.4, -0.5, 0.25, -0.25, 0.375, 0.4}, -- Leg
+			{0.25, -0.5, -0.4, 0.4, 0.375, -0.25}, -- Leg
+			{-0.5, 0.375, -0.5, 0.5, 0.5, 0.5}, -- Tabletop
+			{-0.01, 0.5625, -0.125, 0.01, 0.625, 0.125}, -- Saw blade (top)
+			{-0.01, 0.5, -0.1875, 0.01, 0.5625, 0.1875}, -- Saw blade (bottom)
+			{-0.25, 0.0625, -0.25, 0.25, 0.375, 0.25}, -- Motor case
+		},
+	},
 })
 
 minetest.register_node("workshops:drill_press", {
 	description = S("Drill Press"),
 	tiles = {"image.png"},
 	groups = {workshops_carpentry = 2, oddly_breakable_by_hand = 1},
+	tiles = {
+		"workshops_drill_top.png",
+		"workshops_drill_bottom.png^[transformR180",
+		"workshops_drill_rside.png",
+		"workshops_drill_lside.png",
+		"workshops_drill_back.png",
+		"workshops_drill_front.png"
+		},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1},
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.1875, 0.0625, -0.125, 0.1875, 0.5, 0.3125}, 
+			{-0.1875, 0.125, -0.1875, 0.1875, 0.4375, 0.375}, 
+			{-0.1875, -0.5, 0.375, -0.0625, 0.3125, 0.5}, 
+			{0.0625, -0.5, 0.375, 0.1875, 0.3125, 0.5}, 
+			{-0.0625, -0.25, -0.0625, 0, 0.5, 0}, 
+			{-0.1875, 0.3125, 0.375, 0.1875, 0.375, 0.4375}, 
+			{0.1875, 0.1875, -0.0625, 0.25, 0.375, 0.125}, 
+			{0.1875, 0.25, -0.5, 0.25, 0.3125, 0}, 
+		}
+	},
 })
 
 minetest.register_node("workshops:woodworking_tool_rack", {
@@ -50,6 +91,19 @@ minetest.register_node("workshops:woodworking_tool_rack", {
 
 minetest.register_node("workshops:woodworking_table", {
 	description = S("Woodworking Table"),
-	tiles = {"image.png"},
+	tiles = {"default_wood.png"},
 	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, 0.3125, -0.5, 0.5, 0.5, 0.5}, -- NodeBox1
+			{0.3125, -0.5, -0.4375, 0.4375, 0.3125, -0.3125}, -- NodeBox2
+			{-0.4375, -0.5, -0.4375, -0.3125, 0.3125, -0.3125}, -- NodeBox3
+			{-0.4375, -0.5, 0.3125, -0.3125, 0.3125, 0.4375}, -- NodeBox4
+			{0.3125, -0.5, 0.3125, 0.4375, 0.3125, 0.4375}, -- NodeBox5
+		}
+	}
 })
