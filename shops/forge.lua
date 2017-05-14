@@ -21,8 +21,57 @@ minetest.register_node("workshops:anvil", {
 
 minetest.register_node("workshops:trip_hammer", {
 	description = S("Trip Hammer"),
-	tiles = {"image.png"},
+	tiles = {"default_furnace_top.png"},
 	groups = {workshops_forge = 2, workshops_masonry=1, oddly_breakable_by_hand = 1},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.375, 0.5}, -- base
+			{-0.25, -0.375, -0.4375, 0.25, -0.25, 0.0625}, -- anvil
+			{-0.5, -0.375, -0.3125, -0.3125, 0.3125, -0.0625}, -- support
+			{0.3125, -0.375, -0.3125, 0.5, 0.3125, -0.0625}, -- support2
+			{-0.5, 0.3125, -0.3125, 0.5, 0.5, -0.0625}, -- crossbeam
+			{-0.125, -0.25, -0.375, 0.125, 0, 0}, -- hammer
+			{-0.0625, -0.1875, 0, 0.0625, -0.0625, 0.3125}, -- NodeBox7
+			{-0.125, -0.375, 0.3125, 0.125, 0, 0.5}, -- NodeBox8
+		}
+	},
+	
+	on_punch = function(pos, node, player, pointed_thing)
+		minetest.swap_node(pos, {name="workshops:trip_hammer_up", param2=node.param2})
+	end,
+})
+
+minetest.register_node("workshops:trip_hammer_up", {
+	description = S("Trip Hammer"),
+	tiles = {"default_furnace_top.png"},
+	groups = {workshops_forge = 2, workshops_masonry=1, oddly_breakable_by_hand = 1, not_in_creative_inventory=1},
+	drop = "workshops:trip_hammer",
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",	
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, -0.375, 0.5}, -- base
+			{-0.25, -0.375, -0.4375, 0.25, -0.25, 0.0625}, -- anvil
+			{-0.5, -0.375, -0.3125, -0.3125, 0.3125, -0.0625}, -- support
+			{0.3125, -0.375, -0.3125, 0.5, 0.3125, -0.0625}, -- support2
+			{-0.5, 0.3125, -0.3125, 0.5, 0.5, -0.0625}, -- crossbeam
+			{-0.125, 0.0625, -0.375, 0.125, 0.3125, 0}, -- hammer
+			{-0.0625, -0.0625, 0.25, 0.0625, 0.0625, 0.375}, -- handle
+			{-0.125, -0.375, 0.3125, 0.125, 0, 0.5}, -- handlesupport
+			{-0.0625, 0, 0.125, 0.0625, 0.125, 0.25}, -- handle
+			{-0.0625, 0.0625, 0, 0.0625, 0.1875, 0.125}, -- handle
+		}
+	},
+	
+	on_punch = function(pos, node, player, pointed_thing)
+		minetest.swap_node(pos, {name="workshops:trip_hammer", param2=node.param2})
+	end,
 })
 
 minetest.register_node("workshops:quenching_trough", {
@@ -88,7 +137,7 @@ minetest.register_node("workshops:bellows", {
 minetest.register_node("workshops:bellows_compressed", {
 	description = S("Bellows"),
 	tiles = {"default_furnace_top.png"},
-	groups = {workshops_forge = 1, workshops_smelter = 1, oddly_breakable_by_hand = 1},
+	groups = {workshops_forge = 1, workshops_smelter = 1, oddly_breakable_by_hand = 1, not_in_creative_inventory=1},
 	drop = "workshops:bellows",
 	drawtype = "nodebox",
 	paramtype = "light",

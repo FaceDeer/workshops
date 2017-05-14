@@ -337,7 +337,7 @@ minetest.register_node("workshops:crucible", {
 minetest.register_node("workshops:crucible_tipped", {
 	description = S("Crucible"),
 	tiles = {"default_furnace_top.png"},
-	groups = {workshops_smelter = 2, oddly_breakable_by_hand = 1},
+	groups = {workshops_smelter = 2, oddly_breakable_by_hand = 1, not_in_creative_inventory=1},
 	drop = "workshops:crucible",
 	drawtype = "nodebox",
 	paramtype = "light",
