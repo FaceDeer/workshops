@@ -15,3 +15,7 @@ workshops_drill_rside.png
 workshops_drill_lside.png
 workshops_drill_back.png
 workshops_drill_front.png
+
+CC-by-SA 3.0 from homedecor mod:
+workshops_kitchen_cabinet_front.png
+workshops_kitchen_cabinet_top.png

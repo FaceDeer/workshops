@@ -3,8 +3,60 @@ local S, NS = dofile(MP.."/intllib.lua")
 
 minetest.register_node("workshops:oven", {
 	description = S("Oven"),
-	tiles = {"image.png"},
+	tiles = {
+		"default_cobble.png", "default_furnace_bottom.png",
+		"default_furnace_side.png", "default_furnace_side.png",
+		"default_furnace_side.png", "default_furnace_front.png"
+	},
 	groups = {workshops_kitchen = 2, oddly_breakable_by_hand = 1},
+	sounds = default.node_sound_stone_defaults(),
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, 0, 0.5}, -- NodeBox1
+			{-0.375, 0, -0.5, 0.375, 0.25, 0.5}, -- NodeBox2
+			{-0.25, 0.25, -0.5, 0.25, 0.4375, 0.5}, -- NodeBox3
+			{-0.125, 0.4375, -0.5, 0.125, 0.5, 0.5}, -- NodeBox4
+		}
+	}
+})
+
+minetest.register_node("workshops:oven_active", {
+	description = S("Oven"),
+	tiles = {
+		"default_cobble.png", "default_furnace_bottom.png",
+		"default_furnace_side.png", "default_furnace_side.png",
+		"default_furnace_side.png",
+		{
+			image = "default_furnace_front_active.png",
+			backface_culling = false,
+			animation = {
+				type = "vertical_frames",
+				aspect_w = 16,
+				aspect_h = 16,
+				length = 1.5
+			},
+		}
+	},
+	light_source = 8,
+	drop = "workshops:oven",
+	groups = {workshops_kitchen = 2, oddly_breakable_by_hand = 1, not_in_creative_inventory=1},
+	sounds = default.node_sound_stone_defaults(),
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5, 0.5, 0, 0.5}, -- NodeBox1
+			{-0.375, 0, -0.5, 0.375, 0.25, 0.5}, -- NodeBox2
+			{-0.25, 0.25, -0.5, 0.25, 0.4375, 0.5}, -- NodeBox3
+			{-0.125, 0.4375, -0.5, 0.125, 0.5, 0.5}, -- NodeBox4
+		}
+	}
 })
 
 minetest.register_node("workshops:cauldron", {
@@ -38,7 +90,10 @@ minetest.register_node("workshops:cauldron", {
 
 minetest.register_node("workshops:kitchen_countertop", {
 	description = S("Kitchen Countertop"),
-	tiles = {"default_wood.png"},
+	tiles = {"workshops_kitchen_cabinet_top.png", "default_wood.png",
+		"default_wood.png", "default_wood.png",
+		"default_wood.png", "workshops_kitchen_cabinet_front.png"
+	},
 	groups = {workshops_kitchen = 2, oddly_breakable_by_hand = 1},
 	drawtype = "nodebox",
 	paramtype = "light",
@@ -82,7 +137,7 @@ minetest.register_node("workshops:icebox", {
 
 minetest.register_node("workshops:barrel", {
 	description = S("Barrel"),
-	tiles = {"default_wood.png"},
+	tiles = {"workshops_barrel_top.png", "workshops_barrel_top.png", "workshops_barrel_side.png"},
 	groups = {workshops_kitchen = 1, oddly_breakable_by_hand = 1},
 	drawtype = "nodebox",
 	paramtype = "light",
