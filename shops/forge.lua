@@ -105,6 +105,27 @@ minetest.register_node("workshops:forge", {
 	description = S("Forge"),
 	tiles = {"image.png"},
 	groups = {workshops_forge = 2, oddly_breakable_by_hand = 1},
+	tiles = {
+		"default_stone_block.png^(workshops_coal_bed.png^[mask:workshops_forge_bed_mask.png)",
+		"default_stone_brick.png",
+		"default_stone_brick.png",
+		"default_stone_brick.png",
+		"default_stone_brick.png",
+		"default_stone_brick.png",
+		},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, 0.375, -0.5, 0.5, -0.5, 0.5}, -- plat
+			{-0.5, 0.375, 0.375, 0.5, 0.5, 0.5}, -- edge
+			{-0.5, 0.375, -0.5, 0.5, 0.5, -0.375}, -- edge
+			{0.375, 0.375, -0.375, 0.5, 0.5, 0.375}, -- edge
+			{-0.5, 0.375, -0.375, -0.375, 0.5, 0.375}, -- edge
+		},
+	},
 })
 
 minetest.register_node("workshops:bellows", {

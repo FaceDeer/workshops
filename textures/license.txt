@@ -2,6 +2,8 @@ MIT/Public Domain/CC0 by FaceDeer:
 
 workshops_coal_ash.png
 workshops_coal_ash_block.png
+workshops_forge_bed_mask.png
+workshops_coal_bed.png
 
 Zlib license from Moreblocks mod:
 workshops_table_saw_bottom.png
@@ -19,3 +21,4 @@ workshops_drill_front.png
 CC-by-SA 3.0 from homedecor mod:
 workshops_kitchen_cabinet_front.png
 workshops_kitchen_cabinet_top.png
+workshops_icebox_doors.png

@@ -131,8 +131,24 @@ minetest.register_node("workshops:kitchen_grinder", {
 
 minetest.register_node("workshops:icebox", {
 	description = S("Icebox"),
-	tiles = {"image.png"},
-	groups = {workshops_kitchen = 1, oddly_breakable_by_hand = 1},
+	groups = {workshops_kitchen = 2, oddly_breakable_by_hand = 1},
+	tiles = {"default_wood.png", "default_wood.png",
+		"default_wood.png", "default_wood.png",
+		"default_wood.png", "workshops_icebox_doors.png"
+	},
+	drawtype="nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",	
+	node_box = {
+		type="fixed",
+		fixed = {
+			{-0.5, -0.4375, -0.5, 0.5, 0.5, 0.5},
+			{-0.5, -0.5, -0.5, -0.375, -0.4375, -0.375},
+			{0.5, -0.5, -0.5, 0.375, -0.4375, -0.375},
+			{-0.5, -0.5, 0.5, -0.375, -0.4375, 0.375},
+			{0.5, -0.5, 0.5, 0.375, -0.4375, 0.375},
+		},
+	},
 })
 
 minetest.register_node("workshops:barrel", {
