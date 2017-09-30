@@ -27,20 +27,6 @@ workshops.get_workshop_score = function(pos, radius, height, group_name, worksho
 	end
 end
 
-
-simplecrafting_lib.import_legacy_recipes()
-
-simplecrafting_lib.register("smelter_fuel", {
-	input={["default:coal_lump"]=1},
-	burntime = 30,
-	returns={["workshops:coal_ash"]=1}
-})
-simplecrafting_lib.register("smelter_fuel", {
-	input={["default:coalblock"]=1},
-	burntime = 270,
-	returns={["workshops:coal_ash"]=9}
-})
-
 minetest.register_craftitem("workshops:coal_ash", {
 	description = S("Coal Ash"),
 	inventory_image = "workshops_coal_ash.png",

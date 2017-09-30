@@ -171,3 +171,16 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 		end
 	end
 end)
+
+simplecrafting_lib.register("smelter_fuel", {
+	input={["default:coal_lump"]=1},
+	burntime = 30,
+	returns={["workshops:coal_ash"]=1}
+})
+simplecrafting_lib.register("smelter_fuel", {
+	input={["default:coalblock"]=1},
+	burntime = 270,
+	returns={["workshops:coal_ash"]=9}
+})
+
+simplecrafting_lib.import_legacy_recipes()

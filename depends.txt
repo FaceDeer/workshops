@@ -1,3 +1,4 @@
 simplecrafting_lib
 real_minerals?
 intllib?
+hopper?
