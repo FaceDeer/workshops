@@ -1,7 +1,7 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
-minetest.register_node("workshops:oven", {
+local oven_def = {
 	description = S("Oven"),
 	tiles = {
 		"default_cobble.png", "default_furnace_bottom.png",
@@ -22,7 +22,15 @@ minetest.register_node("workshops:oven", {
 			{-0.125, 0.4375, -0.5, 0.125, 0.5, 0.5}, -- NodeBox4
 		}
 	}
-})
+}
+
+local oven_functions = simplecrafting_lib.generate_multifurnace_functions("cooking", "cooking_fuel", true, false)
+
+for k, v in pairs(oven_functions) do
+	oven_def[k] = v
+end
+
+minetest.register_node("workshops:oven", oven_def)
 
 minetest.register_node("workshops:oven_active", {
 	description = S("Oven"),

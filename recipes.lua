@@ -48,6 +48,13 @@ local metal_ingots =
 	["metals:steel_ingot"] = true,
 }
 
+local cooked_food_items =
+{
+	["farming:bread"] = true,
+	["hemp:cooked_seed_hemp"] = true,
+	["farming:cake"] = true,
+}
+
 local function is_group(item_name, group)
 	return minetest.get_item_group(item_name, group) > 0 or item_name == "group:"..group
 end
@@ -71,6 +78,19 @@ local function is_metal_ingot(item_name)
 		return true
 	end
 	return false
+end
+
+local has_suffix = function(str, suffix)
+	return str:sub(-string.len(suffix)) == suffix
+end
+
+local function is_cooked_food(item_name)
+	if is_group(item_name, "food") or cooked_food_items[item_name] then
+		return true
+	end
+	if has_suffix(item_name, "_pie_cooked") then
+		return true
+	end
 end
 
 --------------------------------------------------------------------------------------------
@@ -172,6 +192,7 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 	end
 end)
 
+-- Only coal is hot enough for smelter fuel.
 simplecrafting_lib.register("smelter_fuel", {
 	input={["default:coal_lump"]=1},
 	burntime = 30,
@@ -182,5 +203,30 @@ simplecrafting_lib.register("smelter_fuel", {
 	burntime = 270,
 	returns={["workshops:coal_ash"]=9}
 })
+
+
+-- Appropriates food cooking recipes
+simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
+	if legacy_method ~= "cooking" then 
+		return
+	end
+	
+	for item, count in pairs(recipe.output) do
+		if is_cooked_food(item) then
+			return "cooking", true
+		end
+	end
+end)
+
+simplecrafting_lib.register_recipe_import_filter(function(legacy_method, legacy_recipe)
+	if legacy_method == "fuel" then
+		if legacy_recipe.input["default:coal_lump"] == 1 then
+			legacy_recipe.returns={["workshops:coal_ash"] = 1}
+		elseif legacy_recipe.input["default:coalblock"] == 1 then
+			legacy_recipe.returns={["workshops:coal_ash"] = 9}
+		end
+		return "cooking_fuel", false
+	end
+end)
 
 simplecrafting_lib.import_legacy_recipes()
