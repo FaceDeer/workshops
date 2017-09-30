@@ -3,6 +3,8 @@ local S, NS = dofile(MP.."/intllib.lua")
 
 workshops = {}
 
+dofile(MP.."/recipes.lua")
+
 dofile(MP.."/shops/smelter.lua")
 dofile(MP.."/shops/carpentry.lua")
 dofile(MP.."/shops/masonry.lua")

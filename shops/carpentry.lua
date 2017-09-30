@@ -89,7 +89,7 @@ minetest.register_node("workshops:woodworking_tool_rack", {
 	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1},
 })
 
-minetest.register_node("workshops:woodworking_table", {
+local woodworking_table_def = {
 	description = S("Woodworking Table"),
 	tiles = {"default_wood.png"},
 	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1},
@@ -106,4 +106,12 @@ minetest.register_node("workshops:woodworking_table", {
 			{0.3125, -0.5, 0.3125, 0.4375, 0.3125, 0.4375}, -- NodeBox5
 		}
 	}
-})
+}
+
+local table_functions = simplecrafting_lib.generate_table_functions("carpentry", true, false)
+
+for k, v in pairs(table_functions) do
+	woodworking_table_def[k] = v
+end
+
+minetest.register_node("workshops:woodworking_table", woodworking_table_def)
