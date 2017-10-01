@@ -24,7 +24,10 @@ local oven_def = {
 	}
 }
 
-local oven_functions = simplecrafting_lib.generate_multifurnace_functions("cooking", "cooking_fuel", true, false)
+local oven_functions = simplecrafting_lib.generate_multifurnace_functions("cooking", "cooking_fuel", {
+	show_guides = true,
+	alphabetize_items = false,
+})
 
 for k, v in pairs(oven_functions) do
 	oven_def[k] = v

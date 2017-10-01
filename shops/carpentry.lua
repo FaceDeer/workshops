@@ -108,7 +108,10 @@ local woodworking_table_def = {
 	}
 }
 
-local table_functions = simplecrafting_lib.generate_table_functions("carpentry", true, false)
+local table_functions = simplecrafting_lib.generate_table_functions("carpentry", {
+	show_guides = true,
+	alphabetize_items = false,
+})
 
 for k, v in pairs(table_functions) do
 	woodworking_table_def[k] = v

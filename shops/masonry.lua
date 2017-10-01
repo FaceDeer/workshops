@@ -1,7 +1,10 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
-local table_functions = simplecrafting_lib.generate_table_functions("masonry", true, false)
+local table_functions = simplecrafting_lib.generate_table_functions("masonry", {
+	show_guides = true,
+	alphabetize_items = false,
+})
 
 local table_def = {
 	description = S("Slab Support"),
