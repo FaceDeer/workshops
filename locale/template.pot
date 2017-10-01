@@ -1,0 +1,163 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-01 17:38-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: workshops\init.lua:34
+msgid "Coal Ash"
+msgstr ""
+
+#: workshops\init.lua:40
+msgid "Coal Ash Block"
+msgstr ""
+
+#: workshops\shops\carpentry.lua:5
+msgid "Sawhorse"
+msgstr ""
+
+#: workshops\shops\carpentry.lua:34
+msgid "Table Saw"
+msgstr ""
+
+#: workshops\shops\carpentry.lua:56
+msgid "Drill Press"
+msgstr ""
+
+#: workshops\shops\carpentry.lua:87
+msgid "Woodworking Tool Rack"
+msgstr ""
+
+#: workshops\shops\carpentry.lua:93
+msgid "Woodworking Table"
+msgstr ""
+
+#: workshops\shops\carpentry.lua:114
+msgid "Carpentry"
+msgstr ""
+
+#: workshops\shops\dyer.lua:5
+msgid "Dyer's Tub"
+msgstr ""
+
+#: workshops\shops\dyer.lua:26
+msgid "Dying"
+msgstr ""
+
+#: workshops\shops\forge.lua:5
+#: workshops\shops\forge.lua:54
+msgid "Forge"
+msgstr ""
+
+#: workshops\shops\forge.lua:75
+msgid "Anvil"
+msgstr ""
+
+#: workshops\shops\forge.lua:93
+#: workshops\shops\forge.lua:119
+msgid "Trip Hammer"
+msgstr ""
+
+#: workshops\shops\forge.lua:148
+msgid "Quenching Trough"
+msgstr ""
+
+#: workshops\shops\forge.lua:169
+msgid "Metalworking Tool Rack"
+msgstr ""
+
+#: workshops\shops\forge.lua:175
+#: workshops\shops\forge.lua:202
+msgid "Bellows"
+msgstr ""
+
+#: workshops\shops\kitchen.lua:5
+#: workshops\shops\kitchen.lua:40
+msgid "Oven"
+msgstr ""
+
+#: workshops\shops\kitchen.lua:30
+msgid "Cooking"
+msgstr ""
+
+#: workshops\shops\kitchen.lua:75
+msgid "Cauldron"
+msgstr ""
+
+#: workshops\shops\kitchen.lua:104
+msgid "Kitchen Countertop"
+msgstr ""
+
+#: workshops\shops\kitchen.lua:123
+msgid "Kitchen Grinder"
+msgstr ""
+
+#: workshops\shops\kitchen.lua:145
+msgid "Icebox"
+msgstr ""
+
+#: workshops\shops\kitchen.lua:167
+msgid "Barrel"
+msgstr ""
+
+#: workshops\shops\loom.lua:7
+msgid "Loom"
+msgstr ""
+
+#: workshops\shops\loom.lua:38
+msgid "Fabrics"
+msgstr ""
+
+#: workshops\shops\masonry.lua:7
+msgid "Masonry"
+msgstr ""
+
+#: workshops\shops\masonry.lua:11
+msgid "Slab Support"
+msgstr ""
+
+#: workshops\shops\masonry.lua:37
+msgid "Stoneworking Tool Rack"
+msgstr ""
+
+#: workshops\shops\mechanic.lua:5
+msgid "Mechanic's Workbench"
+msgstr ""
+
+#: workshops\shops\mechanic.lua:26
+msgid "Mechanisms"
+msgstr ""
+
+#: workshops\shops\smelter.lua:15
+msgid "Smelting Furnace"
+msgstr ""
+
+#: workshops\shops\smelter.lua:63
+msgid "Smelter"
+msgstr ""
+
+#: workshops\shops\smelter.lua:86
+msgid "Crafting Guide (Smelter)"
+msgstr ""
+
+#: workshops\shops\smelter.lua:97
+#: workshops\shops\smelter.lua:127
+msgid "Crucible"
+msgstr ""
+
+#: workshops\shops\smelter.lua:158
+msgid "Rock Grinder"
+msgstr ""
