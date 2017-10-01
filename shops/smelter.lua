@@ -60,6 +60,7 @@ local smelter_def = {
 local smelter_functions = simplecrafting_lib.generate_multifurnace_functions("smelter", "smelter_fuel", {
 	show_guides = true,
 	alphabetize_items = false,
+	description =S("Smelter"),
 })
 
 for k, v in pairs(smelter_functions) do

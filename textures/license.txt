@@ -4,6 +4,8 @@ workshops_coal_ash.png
 workshops_coal_ash_block.png
 workshops_forge_bed_mask.png
 workshops_coal_bed.png
+workshops_loom_fabric.png
+workshops_loom_frame_mask.png
 
 Zlib license from Moreblocks mod:
 workshops_table_saw_bottom.png

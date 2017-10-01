@@ -1,0 +1,33 @@
+local MP = minetest.get_modpath(minetest.get_current_modname())
+local S, NS = dofile(MP.."/intllib.lua")
+
+local mechanic_bench_def = {
+	description = S("Mechanic's Workbench"),
+	tiles = {"default_wood.png"},
+	groups = {workshops_mechanic = 1, oddly_breakable_by_hand = 1},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, 0.3125, -0.5, 0.5, 0.5, 0.5}, -- NodeBox1
+			{0.3125, -0.5, -0.4375, 0.4375, 0.3125, -0.3125}, -- NodeBox2
+			{-0.4375, -0.5, -0.4375, -0.3125, 0.3125, -0.3125}, -- NodeBox3
+			{-0.4375, -0.5, 0.3125, -0.3125, 0.3125, 0.4375}, -- NodeBox4
+			{0.3125, -0.5, 0.3125, 0.4375, 0.3125, 0.4375}, -- NodeBox5
+		}
+	}
+}
+
+local table_functions = simplecrafting_lib.generate_table_functions("mechanic", {
+	show_guides = true,
+	alphabetize_items = false,
+	description = S("Mechanisms"),
+})
+
+for k, v in pairs(table_functions) do
+	mechanic_bench_def[k] = v
+end
+
+minetest.register_node("workshops:mechanic_bench", mechanic_bench_def)

@@ -4,6 +4,7 @@ local S, NS = dofile(MP.."/intllib.lua")
 local table_functions = simplecrafting_lib.generate_table_functions("masonry", {
 	show_guides = true,
 	alphabetize_items = false,
+	description =S("Masonry"),
 })
 
 local table_def = {

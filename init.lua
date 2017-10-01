@@ -10,6 +10,9 @@ dofile(MP.."/shops/carpentry.lua")
 dofile(MP.."/shops/masonry.lua")
 dofile(MP.."/shops/forge.lua")
 dofile(MP.."/shops/kitchen.lua")
+dofile(MP.."/shops/mechanic.lua")
+dofile(MP.."/shops/dyer.lua")
+dofile(MP.."/shops/loom.lua")
 
 workshops.get_workshop_score = function(pos, radius, height, group_name, workshop_nodes)
 	local node_list = minetest.find_nodes_in_area(

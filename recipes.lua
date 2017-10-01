@@ -1,5 +1,20 @@
--------------------------------
--- Masonry
+local has_prefix = function(str, prefix)
+	return str:sub(1, string.len(prefix)) == prefix
+end
+local has_suffix = function(str, suffix)
+	return str:sub(-string.len(suffix)) == suffix
+end
+local function is_group(item_name, group)
+	if minetest.get_item_group(item_name, group) > 0 then return true end
+	if has_prefix(item_name, "group:") then
+		local groupname = string.sub(item_name, string.len("group:")+1)
+		for v in string.gmatch(groupname, "[^, ]+") do -- need to account for commas due to dye-type recipes
+			if v == group then return true end
+		end	
+	end
+	return false
+end
+
 
 -- Doesn't include entries that already belong to group "stone" in default.
 local raw_stone = 
@@ -55,14 +70,13 @@ local cooked_food_items =
 	["farming:cake"] = true,
 }
 
-local function is_group(item_name, group)
-	return minetest.get_item_group(item_name, group) > 0 or item_name == "group:"..group
-end
-
 local function is_stone(item_name)
 	if is_group(item_name, "stone") or raw_stone[item_name] then
 		return true
 	end
+	if has_prefix(item_name, "castle_masonry:") then
+		return true
+	end	
 	return false
 end
 
@@ -80,10 +94,6 @@ local function is_metal_ingot(item_name)
 	return false
 end
 
-local has_suffix = function(str, suffix)
-	return str:sub(-string.len(suffix)) == suffix
-end
-
 local function is_cooked_food(item_name)
 	if is_group(item_name, "food") or cooked_food_items[item_name] then
 		return true
@@ -93,103 +103,155 @@ local function is_cooked_food(item_name)
 	end
 end
 
---------------------------------------------------------------------------------------------
+local mechanical_mod_prefixes = {"technic:", "mesecons", "digtron:", "hopper:", "elevator:", "pipeworks:",}
 
--- appropriates recipes with stone inputs
+local function is_mechanical(item_name)
+	for _, mod in pairs(mechanical_mod_prefixes) do
+		if has_prefix(item_name, mod) then
+			return true
+		end
+	end
+end
+
+local function is_dye(item_name)
+	if is_group(item_name, "dye") then
+		return true
+	end
+end
+
+local function is_fabric(item_name)
+	if is_group(item_name, "thread") or is_group(item_name, "wool") or item_name == "farming:cotton" then
+		return true
+	end
+end
+
+---------------------------------------------------------------------i-----------------------
+
+local metal_melt_time = 5.0
+
+-- The order these items are checked in allows for more "complicated" workshops to override "simpler" ones.
+
 simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
-	if legacy_method ~= "normal" then 
-		return
-	end
-
-	for item, count in pairs(recipe.input) do
-		if is_stone(item) then
-			return "masonry", true
-		end
-	end
-end)
-
--- appropriate recipes with wood inputs but not metal or stone inputs
-simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
-	if legacy_method ~= "normal" then 
-		return
-	end
-
-	for item, count in pairs(recipe.output) do
-		if carpentry_output_whitelist[item] then
-			return "carpentry", true
-		end
-	end
-	
-	local contains_wood = false
-	for item, count in pairs(recipe.input) do
-		if is_stone(item) or is_metal_ingot(item) then
-			return
-		end
-		if is_wood(item) then
-			contains_wood = true
-		end
-	end
-	
-	if contains_wood then
-		return "carpentry", true
-	end
-end)
-
-----------------------------------------------
--- Smelter
-
--- creates "recycling" recipes that allow items to be melted down for their metal content
--- doesn't otherwise disturb the crafting systems.
-simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
-	if legacy_method ~= "normal" then 
-		return
-	end
-	
-	local metal_inputs = {}
-	local has_metal_inputs = false
-	for item, count in pairs(recipe.input) do
-		if is_metal_ingot(item) then
-			metal_inputs[item] = count
-			has_metal_inputs = true
-		end
-	end
-	
-	if has_metal_inputs then
-		local max_item
-		local max_count = 0
-		local total_count = 0
-		for item, count in pairs(metal_inputs) do
-			total_count = total_count + count
-			if count > max_count then
-				max_count = count
-				max_item = item
+	if legacy_method == "normal" then 
+		-- Create "recycling" recipes that allow smelters to melt down items that
+		-- were made from metal ingots, recovering the metal ingots
+		local metal_inputs = {}
+		local metal_count = 0
+		
+		for item, count in pairs(recipe.input) do
+			if is_metal_ingot(item) then
+				metal_count = metal_count + 1
+				metal_inputs[item] = count
 			end
 		end
-		metal_inputs[max_item] = nil
-		local recycle_recipe = {}
-		recycle_recipe.cooktime = total_count * 3.0
-		recycle_recipe.input = {}
-		for item, count in pairs(recipe.output) do
-			recycle_recipe.input[item] = count
+		if metal_count > 0 then
+			local max_item
+			local max_count = 0
+			for item, count in pairs(metal_inputs) do
+				if count > max_count then
+					max_count = count
+					max_item = item
+				end
+			end
+			metal_inputs[max_item] = nil
+			local recycle_recipe = {}
+			recycle_recipe.cooktime = metal_count * metal_melt_time
+			recycle_recipe.input = {}
+			for item, count in pairs(recipe.output) do
+				recycle_recipe.input[item] = count
+			end
+			recycle_recipe.output = {[max_item] = max_count}
+			recycle_recipe.returns = metal_inputs
+			
+			simplecrafting_lib.register("smelter", recycle_recipe)
 		end
-		recycle_recipe.output = {[max_item] = max_count}
-		recycle_recipe.returns = metal_inputs
+	
+		-- Carpentry overrides first
+		for item, count in pairs(recipe.output) do
+			if carpentry_output_whitelist[item] then
+				return "carpentry", true
+			end
+		end
 		
-		simplecrafting_lib.register("smelter", recycle_recipe)
-	end
-end)
-
--- appropriates recipes that output metal ingots for the smelter
-simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
-	if legacy_method ~= "cooking" then 
-		return
+		-- Mechanical items
+		for item, count in pairs(recipe.input) do
+			if is_mechanical(item) then
+				return "mechanic", true
+			end
+		end
+		for item, count in pairs(recipe.output) do
+			if is_mechanical(item) then
+				return "mechanic", true
+			end	
+		end
+		
+		-- Forge items
+		if metal_count > 0 then
+			recipe.cooktime = metal_melt_time * metal_count
+			return "forge", true
+		end
+		
+		-- Masonry items
+		for item, count in pairs(recipe.input) do
+			if is_stone(item) then
+				return "masonry", true
+			end
+		end
+		
+		-- Carpentry items
+		for item, count in pairs(recipe.input) do
+			if is_wood(item) then
+				return "carpentry", true
+			end
+		end
+		
+		for item, count in pairs(recipe.input) do
+			if is_dye(item) then
+				return "dyer", true
+			end
+		end
+		for item, count in pairs(recipe.output) do
+			if is_dye(item) then
+				return "dyer", true
+			end
+		end
+		
+		for item, count in pairs(recipe.input) do
+			if is_fabric(item) then
+				return "loom", true
+			end
+		end
+		
+		minetest.debug("Leftover normal recipe: " .. dump(recipe))
+		
 	end
 	
-	for item, count in pairs(recipe.output) do
-		if is_metal_ingot(item) then
-			return "smelter", true
+	if legacy_method == "cooking" then
+		-- smelter recipes
+		for item, count in pairs(recipe.output) do
+			if is_metal_ingot(item) then
+				return "smelter", true
+			end
+		end
+		
+		-- kitchen recipes
+		for item, count in pairs(recipe.output) do
+			if is_cooked_food(item) then
+				return "cooking", true
+			end
 		end
 	end
+	
+	-- All fuel can be used for cooking.
+	if legacy_method == "fuel" then
+		if recipe.input["default:coal_lump"] == 1 then
+			recipe.returns={["workshops:coal_ash"] = 1}
+		elseif recipe.input["default:coalblock"] == 1 then
+			recipe.returns={["workshops:coal_ash"] = 9}
+		end
+		return "cooking_fuel", false
+	end
+
 end)
 
 -- Only coal is hot enough for smelter fuel.
@@ -203,50 +265,5 @@ simplecrafting_lib.register("smelter_fuel", {
 	burntime = 270,
 	returns={["workshops:coal_ash"]=9}
 })
-
-
--- Appropriates food cooking recipes
-simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
-	if legacy_method ~= "cooking" then 
-		return
-	end
-	
-	for item, count in pairs(recipe.output) do
-		if is_cooked_food(item) then
-			return "cooking", true
-		end
-	end
-end)
-
-simplecrafting_lib.register_recipe_import_filter(function(legacy_method, legacy_recipe)
-	if legacy_method == "fuel" then
-		if legacy_recipe.input["default:coal_lump"] == 1 then
-			legacy_recipe.returns={["workshops:coal_ash"] = 1}
-		elseif legacy_recipe.input["default:coalblock"] == 1 then
-			legacy_recipe.returns={["workshops:coal_ash"] = 9}
-		end
-		return "cooking_fuel", false
-	end
-end)
-
-
--- Forge recipes
-simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
-	if legacy_method ~= "normal" then 
-		return
-	end
-
-	local metal_count = 0
-	for item, count in pairs(recipe.input) do
-		if is_metal_ingot(item) then
-			metal_count = metal_count + 1
-		end
-	end
-	
-	if metal_count > 0 then
-		recipe.cooktime = 5 * metal_count
-		return "forge", true
-	end
-end)
 
 simplecrafting_lib.import_legacy_recipes()

@@ -111,6 +111,7 @@ local woodworking_table_def = {
 local table_functions = simplecrafting_lib.generate_table_functions("carpentry", {
 	show_guides = true,
 	alphabetize_items = false,
+	description = S("Carpentry"),
 })
 
 for k, v in pairs(table_functions) do
