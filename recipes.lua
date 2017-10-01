@@ -229,4 +229,24 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, legacy_
 	end
 end)
 
+
+-- Forge recipes
+simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
+	if legacy_method ~= "normal" then 
+		return
+	end
+
+	local metal_count = 0
+	for item, count in pairs(recipe.input) do
+		if is_metal_ingot(item) then
+			metal_count = metal_count + 1
+		end
+	end
+	
+	if metal_count > 0 then
+		recipe.cooktime = 5 * metal_count
+		return "forge", true
+	end
+end)
+
 simplecrafting_lib.import_legacy_recipes()
