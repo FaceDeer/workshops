@@ -4,7 +4,7 @@ local S, NS = dofile(MP.."/intllib.lua")
 local table_functions = simplecrafting_lib.generate_table_functions("masonry", {
 	show_guides = true,
 	alphabetize_items = false,
-	description =S("Masonry"),
+	description = simplecrafting_lib.get_crafting_info("masonry").description,
 })
 
 local table_def = {
@@ -37,4 +37,9 @@ minetest.register_node("workshops:stoneworking_tool_rack", {
 	description = S("Stoneworking Tool Rack"),
 	tiles = {"image.png"},
 	groups = {workshops_masonry = 2, oddly_breakable_by_hand = 1},
+})
+
+simplecrafting_lib.register_crafting_guide_item("workshops:masonry_guide", "masonry", {
+	guide_color = "#888888",
+	copy_item_to_book = "workshops:stone_support",
 })

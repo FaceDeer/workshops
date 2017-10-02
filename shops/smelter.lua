@@ -60,7 +60,7 @@ local smelter_def = {
 local smelter_functions = simplecrafting_lib.generate_multifurnace_functions("smelter", "smelter_fuel", {
 	show_guides = true,
 	alphabetize_items = false,
-	description =S("Smelter"),
+	description = simplecrafting_lib.get_crafting_info("smelter").description,
 })
 
 for k, v in pairs(smelter_functions) do
@@ -78,20 +78,13 @@ if minetest.get_modpath("hopper") and hopper ~= nil and hopper.add_container ~= 
 })
 end
 
+simplecrafting_lib.register_crafting_guide_item("workshops:smelter_guide", "smelter", {
+	guide_color = "#a93226",
+	copy_item_to_book = "workshops:smelting_furnace",
+})
 
 -------------------------------------------------------------------------
 -- Other nodes
-
-minetest.register_craftitem("workshops:smelter_guide", {
-	description = S("Crafting Guide (Smelter)"),
-	inventory_image = "crafting_guide_cover.png^[colorize:#ff120088^crafting_guide_contents.png",
-	wield_image = "crafting_guide_cover.png^[colorize:#ff120088^crafting_guide_contents.png",
-	stack_max = 1,
-	groups = {book = 1},
-	on_use = function(itemstack, user)
-		simplecrafting_lib.show_crafting_guide("smelter", user)
-	end,
-})
 
 minetest.register_node("workshops:crucible", {
 	description = S("Crucible"),

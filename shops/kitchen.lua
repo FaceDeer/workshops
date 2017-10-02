@@ -27,7 +27,7 @@ local oven_def = {
 local oven_functions = simplecrafting_lib.generate_multifurnace_functions("cooking", "cooking_fuel", {
 	show_guides = true,
 	alphabetize_items = false,
-	description =S("Cooking"),
+	description = simplecrafting_lib.get_crafting_info("cooking").description,
 })
 
 for k, v in pairs(oven_functions) do
@@ -35,6 +35,11 @@ for k, v in pairs(oven_functions) do
 end
 
 minetest.register_node("workshops:oven", oven_def)
+
+simplecrafting_lib.register_crafting_guide_item("workshops:kitchen_guide", "cooking", {
+	guide_color = "#e74c3c",
+	copy_item_to_book = "workshops:oven",
+})
 
 minetest.register_node("workshops:oven_active", {
 	description = S("Oven"),

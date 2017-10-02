@@ -1,3 +1,15 @@
+local MP = minetest.get_modpath(minetest.get_current_modname())
+local S, NS = dofile(MP.."/intllib.lua")
+
+simplecrafting_lib.get_crafting_info("smelter").description = S("Smelter")
+simplecrafting_lib.get_crafting_info("carpentry").description = S("Carpentry")
+simplecrafting_lib.get_crafting_info("mechanic").description = S("Mechanisms")
+simplecrafting_lib.get_crafting_info("forge").description = S("Forge")
+simplecrafting_lib.get_crafting_info("masonry").description = S("Masonry")
+simplecrafting_lib.get_crafting_info("dyer").description = S("Dying")
+simplecrafting_lib.get_crafting_info("loom").description = S("Fabrics")
+simplecrafting_lib.get_crafting_info("cooking").description = S("Cooking")
+
 local has_prefix = function(str, prefix)
 	return str:sub(1, string.len(prefix)) == prefix
 end
@@ -251,7 +263,6 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 		end
 		return "cooking_fuel", false
 	end
-
 end)
 
 -- Only coal is hot enough for smelter fuel.

@@ -23,7 +23,7 @@ local mechanic_bench_def = {
 local table_functions = simplecrafting_lib.generate_table_functions("mechanic", {
 	show_guides = true,
 	alphabetize_items = false,
-	description = S("Mechanisms"),
+	description = simplecrafting_lib.get_crafting_info("mechanic").description,
 })
 
 for k, v in pairs(table_functions) do
@@ -31,3 +31,8 @@ for k, v in pairs(table_functions) do
 end
 
 minetest.register_node("workshops:mechanic_bench", mechanic_bench_def)
+
+simplecrafting_lib.register_crafting_guide_item("workshops:mechanics_guide", "mechanic", {
+	guide_color = "#566573",
+	copy_item_to_book = "workshops:mechanic_bench",
+})

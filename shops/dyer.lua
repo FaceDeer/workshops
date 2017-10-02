@@ -23,7 +23,7 @@ local dye_tub_def = {
 local table_functions = simplecrafting_lib.generate_table_functions("dyer", {
 	show_guides = true,
 	alphabetize_items = false,
-	description =S("Dying"),
+	description = simplecrafting_lib.get_crafting_info("dyer").description,
 })
 
 for k, v in pairs(table_functions) do
@@ -31,3 +31,8 @@ for k, v in pairs(table_functions) do
 end
 
 minetest.register_node("workshops:dye_tub", dye_tub_def)
+
+simplecrafting_lib.register_crafting_guide_item("workshops:dying_guide", "dyer", {
+	guide_color = "#8e44ad",
+	copy_item_to_book = "workshops:dye_tub",
+})

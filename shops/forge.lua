@@ -51,7 +51,7 @@ local forge_def = {
 local forge_functions = simplecrafting_lib.generate_multifurnace_functions("forge", "smelter_fuel", {
 	show_guides = true,
 	alphabetize_items = false,
-	description =S("Forge"),
+	description = simplecrafting_lib.get_crafting_info("forge").description,
 })
 
 for k, v in pairs(forge_functions) do

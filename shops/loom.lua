@@ -35,7 +35,7 @@ local loom_def = {
 local table_functions = simplecrafting_lib.generate_table_functions("loom", {
 	show_guides = true,
 	alphabetize_items = false,
-	description =S("Fabrics"),
+	description = simplecrafting_lib.get_crafting_info("loom").description,
 })
 
 for k, v in pairs(table_functions) do
@@ -43,3 +43,8 @@ for k, v in pairs(table_functions) do
 end
 
 minetest.register_node("workshops:loom", loom_def)
+
+simplecrafting_lib.register_crafting_guide_item("workshops:loom_guide", "loom", {
+	guide_color = "#5d6d7e",
+	copy_item_to_book = "workshops:loom",
+})

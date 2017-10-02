@@ -111,7 +111,7 @@ local woodworking_table_def = {
 local table_functions = simplecrafting_lib.generate_table_functions("carpentry", {
 	show_guides = true,
 	alphabetize_items = false,
-	description = S("Carpentry"),
+	description = simplecrafting_lib.get_crafting_info("carpentry").description,
 })
 
 for k, v in pairs(table_functions) do
@@ -119,3 +119,8 @@ for k, v in pairs(table_functions) do
 end
 
 minetest.register_node("workshops:woodworking_table", woodworking_table_def)
+
+simplecrafting_lib.register_crafting_guide_item("workshops:carpentry_guide", "carpentry", {
+	guide_color = "#a04000",
+	copy_item_to_book = "workshops:woodworking_table",
+})
