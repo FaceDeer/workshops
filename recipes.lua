@@ -185,6 +185,11 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 				return "carpentry", true
 			end
 		end
+
+		-- special handling for Digtron recycling recipes
+		if recipe.output["digtron:digtron_core"] and not recipe.input["default:mese_crystal_fragment"] then
+			recipe.do_not_use_for_disintermediation = true
+		end		
 		
 		-- Mechanical items
 		for item, count in pairs(recipe.input) do
