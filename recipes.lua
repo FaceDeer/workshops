@@ -1,14 +1,16 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
-simplecrafting_lib.get_crafting_info("smelter").description = S("Smelter")
-simplecrafting_lib.get_crafting_info("carpentry").description = S("Carpentry")
-simplecrafting_lib.get_crafting_info("mechanic").description = S("Mechanisms")
-simplecrafting_lib.get_crafting_info("forge").description = S("Forge")
-simplecrafting_lib.get_crafting_info("masonry").description = S("Masonry")
-simplecrafting_lib.get_crafting_info("dyer").description = S("Dying")
-simplecrafting_lib.get_crafting_info("loom").description = S("Fabrics")
-simplecrafting_lib.get_crafting_info("cooking").description = S("Cooking")
+simplecrafting_lib.set_craft_type_description("smelter", S("Smelter"))
+simplecrafting_lib.set_craft_type_description("carpentry", S("Carpentry"))
+simplecrafting_lib.set_craft_type_description("mechanic", S("Mechanisms"))
+simplecrafting_lib.set_craft_type_description("forge", S("Forge"))
+simplecrafting_lib.set_craft_type_description("masonry", S("Masonry"))
+simplecrafting_lib.set_craft_type_description("dyer", S("Dying"))
+simplecrafting_lib.set_craft_type_description("loom", S("Fabrics"))
+simplecrafting_lib.set_craft_type_description("cooking", S("Cooking"))
+
+simplecrafting_lib.set_craft_type_disintermediation_cycles("mechanic", 2)
 
 local has_prefix = function(str, prefix)
 	return str:sub(1, string.len(prefix)) == prefix
@@ -26,7 +28,6 @@ local function is_group(item_name, group)
 	end
 	return false
 end
-
 
 -- Doesn't include entries that already belong to group "stone" in default.
 local raw_stone = 
