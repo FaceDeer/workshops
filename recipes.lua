@@ -1,16 +1,16 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
-simplecrafting_lib.set_craft_type_description("smelter", S("Smelter"))
-simplecrafting_lib.set_craft_type_description("carpentry", S("Carpentry"))
-simplecrafting_lib.set_craft_type_description("mechanic", S("Mechanisms"))
-simplecrafting_lib.set_craft_type_description("forge", S("Forge"))
-simplecrafting_lib.set_craft_type_description("masonry", S("Masonry"))
-simplecrafting_lib.set_craft_type_description("dyer", S("Dying"))
-simplecrafting_lib.set_craft_type_description("loom", S("Fabrics"))
-simplecrafting_lib.set_craft_type_description("cooking", S("Cooking"))
+simplecrafting_lib.set_description("smelter", S("Smelter"))
+simplecrafting_lib.set_description("carpentry", S("Carpentry"))
+simplecrafting_lib.set_description("mechanic", S("Mechanisms"))
+simplecrafting_lib.set_description("forge", S("Forge"))
+simplecrafting_lib.set_description("masonry", S("Masonry"))
+simplecrafting_lib.set_description("dyer", S("Dying"))
+simplecrafting_lib.set_description("loom", S("Fabrics"))
+simplecrafting_lib.set_description("cooking", S("Cooking"))
 
-simplecrafting_lib.set_craft_type_disintermediation_cycles("mechanic", 2)
+simplecrafting_lib.set_disintermediation_cycles("mechanic", 2)
 
 local has_prefix = function(str, prefix)
 	return str:sub(1, string.len(prefix)) == prefix
