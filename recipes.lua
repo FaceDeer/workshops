@@ -11,6 +11,7 @@ simplecrafting_lib.set_description("loom", S("Fabrics"))
 simplecrafting_lib.set_description("cooking", S("Cooking"))
 
 simplecrafting_lib.set_disintermediation_cycles("mechanic", 2)
+simplecrafting_lib.set_disintermediation_cycles("masonry", 2)
 
 local has_prefix = function(str, prefix)
 	return str:sub(1, string.len(prefix)) == prefix
@@ -74,6 +75,7 @@ local metal_ingots =
 	["metals:pig_iron_ingot"] = true,
 	["metals:wrought_iron_ingot"] = true,
 	["metals:steel_ingot"] = true,
+	["mesecons_materials:silicon"] = true, -- not exactly an ingot, but should be a smelter product
 }
 
 local cooked_food_items =
@@ -186,10 +188,15 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 			end
 		end
 
-		-- special handling for Digtron recycling recipes
+		-- special handling for Digtron recycling recipes to prevent disintermediation loops
 		if recipe.output["digtron:digtron_core"] and not recipe.input["default:mese_crystal_fragment"] then
 			recipe.do_not_use_for_disintermediation = true
-		end		
+		end
+		
+		-- Have to do this before the mechanic test, otherwise it doesn't make it to the smelter test.
+		if recipe.output["mesecons_materials:silicon"] then
+			return "smelter", true
+		end
 		
 		-- Mechanical items
 		for item, count in pairs(recipe.input) do

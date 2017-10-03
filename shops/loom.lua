@@ -36,6 +36,7 @@ local table_functions = simplecrafting_lib.generate_table_functions("loom", {
 	show_guides = true,
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("loom").description,
+	hopper_node_name = "workshops:loom",
 })
 
 for k, v in pairs(table_functions) do

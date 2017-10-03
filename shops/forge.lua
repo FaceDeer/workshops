@@ -52,6 +52,7 @@ local forge_functions = simplecrafting_lib.generate_multifurnace_functions("forg
 	show_guides = true,
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("forge").description,
+	hopper_node_name = "workshops:forge",
 })
 
 for k, v in pairs(forge_functions) do
@@ -59,16 +60,6 @@ for k, v in pairs(forge_functions) do
 end
 
 minetest.register_node("workshops:forge", forge_def)
-
-if minetest.get_modpath("hopper") and hopper ~= nil and hopper.add_container ~= nil then
-	hopper:add_container({
-		{"top", "workshops:forge", "output"},
-		{"bottom", "workshops:forge", "input"},
-		{"side", "workshops:forge", "fuel"},
-})
-end
-
-
 
 
 minetest.register_node("workshops:anvil", {

@@ -24,6 +24,7 @@ local table_functions = simplecrafting_lib.generate_table_functions("dyer", {
 	show_guides = true,
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("dyer").description,
+	hopper_node_name = "workshops:dye_tub",
 })
 
 for k, v in pairs(table_functions) do

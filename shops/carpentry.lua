@@ -112,6 +112,7 @@ local table_functions = simplecrafting_lib.generate_table_functions("carpentry",
 	show_guides = true,
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("carpentry").description,
+	hopper_node_name = "workshops:woodworking_table",
 })
 
 for k, v in pairs(table_functions) do

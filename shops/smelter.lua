@@ -61,6 +61,7 @@ local smelter_functions = simplecrafting_lib.generate_multifurnace_functions("sm
 	show_guides = true,
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("smelter").description,
+	hopper_node_name = "workshops:smelting_furnace",
 })
 
 for k, v in pairs(smelter_functions) do
@@ -69,14 +70,6 @@ end
 
 minetest.register_node("workshops:smelting_furnace", smelter_def)
 
-
-if minetest.get_modpath("hopper") and hopper ~= nil and hopper.add_container ~= nil then
-	hopper:add_container({
-		{"top", "workshops:smelting_furnace", "output"},
-		{"bottom", "workshops:smelting_furnace", "input"},
-		{"side", "workshops:smelting_furnace", "fuel"},
-})
-end
 
 simplecrafting_lib.register_crafting_guide_item("workshops:smelter_guide", "smelter", {
 	guide_color = "#a93226",

@@ -28,6 +28,7 @@ local oven_functions = simplecrafting_lib.generate_multifurnace_functions("cooki
 	show_guides = true,
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("cooking").description,
+	hopper_node_name = "workshops:oven",
 })
 
 for k, v in pairs(oven_functions) do
