@@ -4,7 +4,7 @@ local S, NS = dofile(MP.."/intllib.lua")
 local mechanic_bench_def = {
 	description = S("Mechanic's Workbench"),
 	tiles = {"default_wood.png"},
-	groups = {workshops_mechanic = 1, oddly_breakable_by_hand = 1},
+	groups = {workshops_mechanic = 1, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1},
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
@@ -25,6 +25,7 @@ local table_functions = simplecrafting_lib.generate_table_functions("mechanic", 
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("mechanic").description,
 	hopper_node_name = "workshops:mechanic_bench",
+	enable_pipeworks = true,
 })
 
 for k, v in pairs(table_functions) do

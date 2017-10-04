@@ -6,12 +6,13 @@ local table_functions = simplecrafting_lib.generate_table_functions("masonry", {
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("masonry").description,
 	hopper_node_name = "workshops:stone_support",
+	enable_pipeworks = true,
 })
 
 local table_def = {
 	description = S("Slab Support"),
 	tiles = {"default_wood.png"},
-	groups = {workshops_masonry = 2, oddly_breakable_by_hand = 1},
+	groups = {workshops_masonry = 2, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1},
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",

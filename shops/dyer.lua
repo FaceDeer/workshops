@@ -4,7 +4,7 @@ local S, NS = dofile(MP.."/intllib.lua")
 local dye_tub_def = {
 	description = S("Dyer's Tub"),
 	tiles = {"workshops_barrel_top.png", "workshops_barrel_top.png", "workshops_barrel_side.png"},
-	groups = {workshops_kitchen = 1, oddly_breakable_by_hand = 1},
+	groups = {workshops_kitchen = 1, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1},
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
@@ -25,6 +25,7 @@ local table_functions = simplecrafting_lib.generate_table_functions("dyer", {
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("dyer").description,
 	hopper_node_name = "workshops:dye_tub",
+	enable_pipeworks = true,
 })
 
 for k, v in pairs(table_functions) do

@@ -4,7 +4,7 @@ local S, NS = dofile(MP.."/intllib.lua")
 local forge_def = {
 	description = S("Forge"),
 	tiles = {"image.png"},
-	groups = {workshops_forge = 2, oddly_breakable_by_hand = 1},
+	groups = {workshops_forge = 2, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1},
 	tiles = {
 		"default_stone_block.png^(workshops_coal_bed.png^[mask:workshops_forge_bed_mask.png)",
 		"default_stone_brick.png",
@@ -26,26 +26,6 @@ local forge_def = {
 			{-0.5, 0.375, -0.375, -0.375, 0.5, 0.375}, -- edge
 		},
 	},
-
-	-- TODO: make sophisticated
-	-- Pipeworks compatibility
-	----------------------------------------------------------------
-
-	tube = (function() if minetest.get_modpath("pipeworks") then return {
-		insert_object = function(pos, node, stack, direction)
-			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
-			return inv:add_item("input", stack)
-		end,
-		can_insert = function(pos, node, stack, direction)
-			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
-			return inv:room_for_item("input", stack)
-		end,
-		input_inventory = "main",
-		connect_sides = {left = 1, right = 1, back = 1, front = 1, bottom = 1, top = 1}
-	} end end)(),
-
 }
 
 local forge_functions = simplecrafting_lib.generate_multifurnace_functions("forge", "smelter_fuel", {
@@ -53,6 +33,7 @@ local forge_functions = simplecrafting_lib.generate_multifurnace_functions("forg
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("forge").description,
 	hopper_node_name = "workshops:forge",
+	enable_pipeworks = true,
 })
 
 for k, v in pairs(forge_functions) do

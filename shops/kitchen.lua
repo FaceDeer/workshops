@@ -8,7 +8,7 @@ local oven_def = {
 		"default_furnace_side.png", "default_furnace_side.png",
 		"default_furnace_side.png", "default_furnace_front.png"
 	},
-	groups = {workshops_kitchen = 2, oddly_breakable_by_hand = 1},
+	groups = {workshops_kitchen = 2, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1},
 	sounds = default.node_sound_stone_defaults(),
 	drawtype = "nodebox",
 	paramtype = "light",
@@ -29,6 +29,7 @@ local oven_functions = simplecrafting_lib.generate_multifurnace_functions("cooki
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("cooking").description,
 	hopper_node_name = "workshops:oven",
+	enable_pipeworks = true,
 })
 
 for k, v in pairs(oven_functions) do

@@ -6,7 +6,7 @@ local loom_tex = "(default_wood.png^[mask:workshops_loom_frame_mask.png)^worksho
 local loom_def = {
 	description = S("Loom"),
 	tiles = {"default_wood.png", "default_wood.png", "default_wood.png", "default_wood.png", loom_tex, loom_tex.."^[transformFX"},
-	groups = {workshops_loom = 1, oddly_breakable_by_hand = 1},
+	groups = {workshops_loom = 1, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1},
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
@@ -37,6 +37,7 @@ local table_functions = simplecrafting_lib.generate_table_functions("loom", {
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("loom").description,
 	hopper_node_name = "workshops:loom",
+	enable_pipeworks = true,
 })
 
 for k, v in pairs(table_functions) do

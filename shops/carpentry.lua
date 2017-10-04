@@ -4,7 +4,7 @@ local S, NS = dofile(MP.."/intllib.lua")
 minetest.register_node("workshops:sawhorse", {
 	description = S("Sawhorse"),
 	tiles = {"default_wood.png"},
-	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1},
+	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1},
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
@@ -113,6 +113,7 @@ local table_functions = simplecrafting_lib.generate_table_functions("carpentry",
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("carpentry").description,
 	hopper_node_name = "workshops:woodworking_table",
+	enable_pipeworks = true,
 })
 
 for k, v in pairs(table_functions) do

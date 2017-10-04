@@ -18,7 +18,7 @@ local smelter_def = {
 	},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {oddly_breakable_by_hand = 1, cracky=3, workshops_smelter = 3},
+	groups = {oddly_breakable_by_hand = 1, cracky=3, workshops_smelter = 3, tubedevice = 1, tubedevice_receiver = 1},
 	drawtype = "nodebox",
 	paramtype = "light",
 	node_box = {
@@ -35,33 +35,15 @@ local smelter_def = {
 			{-0.25, -0.1875, -0.5, 0.25, -0.0625, -0.4375}, -- arch
 		}
 	},
-	
-	-- TODO: make sophisticated
-	-- Pipeworks compatibility
-	----------------------------------------------------------------
-
-	tube = (function() if minetest.get_modpath("pipeworks") then return {
-		insert_object = function(pos, node, stack, direction)
-			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
-			return inv:add_item("input", stack)
-		end,
-		can_insert = function(pos, node, stack, direction)
-			local meta = minetest.get_meta(pos)
-			local inv = meta:get_inventory()
-			return inv:room_for_item("input", stack)
-		end,
-		input_inventory = "main",
-		connect_sides = {left = 1, right = 1, back = 1, front = 1, bottom = 1, top = 1}
-	} end end)(),
-
-}
+	}
 
 local smelter_functions = simplecrafting_lib.generate_multifurnace_functions("smelter", "smelter_fuel", {
 	show_guides = true,
 	alphabetize_items = false,
 	description = simplecrafting_lib.get_crafting_info("smelter").description,
 	hopper_node_name = "workshops:smelting_furnace",
+	enable_pipeworks = true,
+	protect_inventory = true,
 })
 
 for k, v in pairs(smelter_functions) do
