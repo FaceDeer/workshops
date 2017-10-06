@@ -10,8 +10,10 @@ simplecrafting_lib.set_description("dyer", S("Dying"))
 simplecrafting_lib.set_description("loom", S("Fabrics"))
 simplecrafting_lib.set_description("cooking", S("Cooking"))
 
-simplecrafting_lib.set_disintermediation_cycles("mechanic", 2)
-simplecrafting_lib.set_disintermediation_cycles("masonry", 2)
+simplecrafting_lib.set_disintermediation_cycles("mechanic", 1)
+simplecrafting_lib.set_disintermediation_cycles("masonry", 1)
+simplecrafting_lib.set_disintermediation_cycles("dyer", 1)
+simplecrafting_lib.set_disintermediation_cycles("carpentry", 1)
 
 local has_prefix = function(str, prefix)
 	return str:sub(1, string.len(prefix)) == prefix
@@ -247,7 +249,7 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 			end
 		end
 		
-		minetest.debug("Leftover normal recipe: " .. dump(recipe))
+		--minetest.debug("Leftover normal recipe: " .. dump(recipe))
 		
 	end
 	

@@ -1,10 +1,37 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
+local forge_node_box = {
+	type = "fixed",
+	fixed = {
+		{-0.5, 0.375, -0.5, 0.5, -0.5, 0.5}, -- plat
+		{-0.5, 0.375, 0.375, 0.5, 0.5, 0.5}, -- edge
+		{-0.5, 0.375, -0.5, 0.5, 0.5, -0.375}, -- edge
+		{0.375, 0.375, -0.375, 0.5, 0.5, 0.375}, -- edge
+		{-0.5, 0.375, -0.375, -0.375, 0.5, 0.375}, -- edge
+	},
+}
+
 local forge_def = {
 	description = S("Forge"),
-	tiles = {"image.png"},
 	groups = {workshops_forge = 2, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1},
+	tiles = {
+		"default_stone_block.png^(default_coal_block.png^[mask:workshops_forge_bed_mask.png)",
+		"default_stone_brick.png",
+		"default_stone_brick.png",
+		"default_stone_brick.png",
+		"default_stone_brick.png",
+		"default_stone_brick.png",
+		},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = forge_node_box,
+}
+
+local forge_def_active = {
+	description = S("Forge"),
+	groups = {workshops_forge = 2, oddly_breakable_by_hand = 1, tubedevice = 1, tubedevice_receiver = 1, not_in_creative_inventory = 1},
 	tiles = {
 		"default_stone_block.png^(workshops_coal_bed.png^[mask:workshops_forge_bed_mask.png)",
 		"default_stone_brick.png",
@@ -16,16 +43,8 @@ local forge_def = {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, 0.375, -0.5, 0.5, -0.5, 0.5}, -- plat
-			{-0.5, 0.375, 0.375, 0.5, 0.5, 0.5}, -- edge
-			{-0.5, 0.375, -0.5, 0.5, 0.5, -0.375}, -- edge
-			{0.375, 0.375, -0.375, 0.5, 0.5, 0.375}, -- edge
-			{-0.5, 0.375, -0.375, -0.375, 0.5, 0.375}, -- edge
-		},
-	},
+	node_box = forge_node_box,
+	light_source = 5,
 }
 
 local forge_functions = simplecrafting_lib.generate_multifurnace_functions("forge", "smelter_fuel", {
@@ -34,14 +53,16 @@ local forge_functions = simplecrafting_lib.generate_multifurnace_functions("forg
 	description = simplecrafting_lib.get_crafting_info("forge").description,
 	hopper_node_name = "workshops:forge",
 	enable_pipeworks = true,
+	active_node = "workshops:forge_active",
 })
 
 for k, v in pairs(forge_functions) do
 	forge_def[k] = v
+	forge_def_active[k] = v
 end
 
 minetest.register_node("workshops:forge", forge_def)
-
+minetest.register_node("workshops:forge_active", forge_def_active)
 
 minetest.register_node("workshops:anvil", {
 	description = S("Anvil"),
