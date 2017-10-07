@@ -31,7 +31,7 @@ local get_workshop_score = function(pos, radius, height, group_name)
 end
 
 workshops.get_crafting_time_multiplier = function(pos, radius, height, group_name, recipe)
-	local score = workshops.get_workshop_score(pos, radius, height, group_name)
+	local score = get_workshop_score(pos, radius, height, group_name)
 	local input_count = 0
 	if recipe.cooktime then
 		input_count = recipe.cooktime
