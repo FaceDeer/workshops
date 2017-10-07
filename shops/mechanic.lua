@@ -26,6 +26,9 @@ local table_functions = simplecrafting_lib.generate_table_functions("mechanic", 
 	description = simplecrafting_lib.get_crafting_info("mechanic").description,
 	hopper_node_name = "workshops:mechanic_bench",
 	enable_pipeworks = true,
+	crafting_time_multiplier = function (pos, recipe)
+		return workshops.get_crafting_time_multiplier(pos, workshops.radius, workshops.height, "workshops_mechanic", recipe)
+	end,
 })
 
 for k, v in pairs(table_functions) do

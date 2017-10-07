@@ -3,6 +3,9 @@ local S, NS = dofile(MP.."/intllib.lua")
 
 workshops = {}
 
+workshops.height = 5
+workshops.radius = 5
+
 dofile(MP.."/recipes.lua")
 
 dofile(MP.."/shops/smelter.lua")
@@ -14,20 +17,30 @@ dofile(MP.."/shops/mechanic.lua")
 dofile(MP.."/shops/dyer.lua")
 dofile(MP.."/shops/loom.lua")
 
-workshops.get_workshop_score = function(pos, radius, height, group_name, workshop_nodes)
+local get_workshop_score = function(pos, radius, height, group_name)
 	local node_list = minetest.find_nodes_in_area(
 			{x=pos.x-radius, y=pos.y-height, z=pos.z-radius},
 			{x=pos.x+radius, y=pos.y+height, z=pos.z+radius},
-			workshop_nodes
+			"group:" .. group_name
 		)
+	local val = 0
 	for _, accessory_pos in pairs(node_list) do
-		local val = minetest.get_item_group(minetest.get_node(accessory_pos).name, group_name)
-		if val > 0 then
-			return val
-		else
-			return 1
+		val = val + minetest.get_item_group(minetest.get_node(accessory_pos).name, group_name)
+	end
+	return val
+end
+
+workshops.get_crafting_time_multiplier = function(pos, radius, height, group_name, recipe)
+	local score = workshops.get_workshop_score(pos, radius, height, group_name)
+	local input_count = 0
+	if recipe.cooktime then
+		input_count = recipe.cooktime
+	else
+		for _, count in pairs(recipe.input) do
+			input_count = input_count + count
 		end
 	end
+	return input_count / score
 end
 
 minetest.register_craftitem("workshops:coal_ash", {

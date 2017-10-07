@@ -30,6 +30,9 @@ local oven_functions = simplecrafting_lib.generate_multifurnace_functions("cooki
 	description = simplecrafting_lib.get_crafting_info("cooking").description,
 	hopper_node_name = "workshops:oven",
 	enable_pipeworks = true,
+	crafting_time_multiplier = function (pos, recipe)
+		return workshops.get_crafting_time_multiplier(pos, workshops.radius, workshops.height, "workshops_kitchen", recipe)
+	end,
 })
 
 for k, v in pairs(oven_functions) do

@@ -7,6 +7,9 @@ local table_functions = simplecrafting_lib.generate_table_functions("masonry", {
 	description = simplecrafting_lib.get_crafting_info("masonry").description,
 	hopper_node_name = "workshops:stone_support",
 	enable_pipeworks = true,
+	crafting_time_multiplier = function (pos, recipe)
+		return workshops.get_crafting_time_multiplier(pos, workshops.radius, workshops.height, "workshops_masonry", recipe)
+	end,
 })
 
 local table_def = {

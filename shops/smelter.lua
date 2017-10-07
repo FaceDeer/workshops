@@ -44,6 +44,9 @@ local smelter_functions = simplecrafting_lib.generate_multifurnace_functions("sm
 	hopper_node_name = "workshops:smelting_furnace",
 	enable_pipeworks = true,
 	protect_inventory = true,
+	crafting_time_multiplier = function (pos, recipe)
+		return workshops.get_crafting_time_multiplier(pos, workshops.radius, workshops.height, "workshops_smelter", recipe)
+	end,
 })
 
 for k, v in pairs(smelter_functions) do

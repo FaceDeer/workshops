@@ -1,6 +1,48 @@
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local S, NS = dofile(MP.."/intllib.lua")
 
+local woodworking_table_def = {
+	description = S("Woodworking Table"),
+	tiles = {"default_wood.png"},
+	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, 0.3125, -0.5, 0.5, 0.5, 0.5}, -- NodeBox1
+			{0.3125, -0.5, -0.4375, 0.4375, 0.3125, -0.3125}, -- NodeBox2
+			{-0.4375, -0.5, -0.4375, -0.3125, 0.3125, -0.3125}, -- NodeBox3
+			{-0.4375, -0.5, 0.3125, -0.3125, 0.3125, 0.4375}, -- NodeBox4
+			{0.3125, -0.5, 0.3125, 0.4375, 0.3125, 0.4375}, -- NodeBox5
+		}
+	}
+}
+
+local table_functions = simplecrafting_lib.generate_autocraft_functions("carpentry", {
+	show_guides = true,
+	alphabetize_items = false,
+	description = simplecrafting_lib.get_crafting_info("carpentry").description,
+	hopper_node_name = "workshops:woodworking_table",
+	enable_pipeworks = true,
+	crafting_time_multiplier = function (pos, recipe)
+		return workshops.get_crafting_time_multiplier(pos, workshops.radius, workshops.height, "workshops_carpentry", recipe)
+	end,
+})
+
+for k, v in pairs(table_functions) do
+	woodworking_table_def[k] = v
+end
+
+minetest.register_node("workshops:woodworking_table", woodworking_table_def)
+
+simplecrafting_lib.register_crafting_guide_item("workshops:carpentry_guide", "carpentry", {
+	guide_color = "#a04000",
+	copy_item_to_book = "workshops:woodworking_table",
+})
+
+
 minetest.register_node("workshops:sawhorse", {
 	description = S("Sawhorse"),
 	tiles = {"default_wood.png"},
@@ -87,42 +129,4 @@ minetest.register_node("workshops:woodworking_tool_rack", {
 	description = S("Woodworking Tool Rack"),
 	tiles = {"image.png"},
 	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1},
-})
-
-local woodworking_table_def = {
-	description = S("Woodworking Table"),
-	tiles = {"default_wood.png"},
-	groups = {workshops_carpentry = 1, oddly_breakable_by_hand = 1},
-	drawtype = "nodebox",
-	paramtype = "light",
-	paramtype2 = "facedir",
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, 0.3125, -0.5, 0.5, 0.5, 0.5}, -- NodeBox1
-			{0.3125, -0.5, -0.4375, 0.4375, 0.3125, -0.3125}, -- NodeBox2
-			{-0.4375, -0.5, -0.4375, -0.3125, 0.3125, -0.3125}, -- NodeBox3
-			{-0.4375, -0.5, 0.3125, -0.3125, 0.3125, 0.4375}, -- NodeBox4
-			{0.3125, -0.5, 0.3125, 0.4375, 0.3125, 0.4375}, -- NodeBox5
-		}
-	}
-}
-
-local table_functions = simplecrafting_lib.generate_table_functions("carpentry", {
-	show_guides = true,
-	alphabetize_items = false,
-	description = simplecrafting_lib.get_crafting_info("carpentry").description,
-	hopper_node_name = "workshops:woodworking_table",
-	enable_pipeworks = true,
-})
-
-for k, v in pairs(table_functions) do
-	woodworking_table_def[k] = v
-end
-
-minetest.register_node("workshops:woodworking_table", woodworking_table_def)
-
-simplecrafting_lib.register_crafting_guide_item("workshops:carpentry_guide", "carpentry", {
-	guide_color = "#a04000",
-	copy_item_to_book = "workshops:woodworking_table",
 })

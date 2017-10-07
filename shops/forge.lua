@@ -54,6 +54,9 @@ local forge_functions = simplecrafting_lib.generate_multifurnace_functions("forg
 	hopper_node_name = "workshops:forge",
 	enable_pipeworks = true,
 	active_node = "workshops:forge_active",
+	crafting_time_multiplier = function (pos, recipe)
+		return workshops.get_crafting_time_multiplier(pos, workshops.radius, workshops.height, "workshops_forge", recipe)
+	end,
 })
 
 for k, v in pairs(forge_functions) do

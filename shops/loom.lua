@@ -38,6 +38,9 @@ local table_functions = simplecrafting_lib.generate_table_functions("loom", {
 	description = simplecrafting_lib.get_crafting_info("loom").description,
 	hopper_node_name = "workshops:loom",
 	enable_pipeworks = true,
+	crafting_time_multiplier = function (pos, recipe)
+		return workshops.get_crafting_time_multiplier(pos, workshops.radius, workshops.height, "workshops_loom", recipe)
+	end,
 })
 
 for k, v in pairs(table_functions) do
