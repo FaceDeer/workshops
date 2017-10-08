@@ -198,9 +198,14 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 		end
 		
 		-- There are a few non-cooking recycling recipes already, such as breaking down metal blocks.
-		for item, count in pairs(recipe.output) do
-			if is_metal_ingot(item) or item == "default:glass" then
-				return "smelter", true
+		-- Eliminate these.
+		for in_item, in_count in pairs(recipe.input) do
+			if metal_blocks[in_item] then
+				for item, count in pairs(recipe.output) do
+					if is_metal_ingot(item) then
+						return nil, true
+					end
+				end
 			end
 		end
 	
@@ -302,14 +307,14 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 			end
 		end
 		
-		minetest.debug("Leftover normal recipe: " .. dump(recipe))
+		--minetest.debug("Leftover normal recipe: " .. dump(recipe))
 		
 	end
 	
 	if legacy_method == "cooking" then
 		-- smelter recipes
 		for item, count in pairs(recipe.output) do
-			if is_metal_ingot(item) then
+			if is_metal_ingot(item) or item == "default:glass" or item == "default:obsidian_glass" then
 				return "smelter", true
 			end
 		end
