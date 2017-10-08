@@ -47,6 +47,8 @@ local raw_stone =
 	["default:obsidian"] = true,
 	["default:obsidianbrick"] = true,
 	["default:obsidian_block"] = true,
+	["default:brick"] = true,
+	["default:clay_brick"] = true,
 }
 
 -- doesn't include entries already in wood-related groups
@@ -69,6 +71,7 @@ local metal_ingots =
 	['default:copper_ingot'] = true,
 	['default:bronze_ingot'] = true,
 	["default:gold_ingot"] = true,
+	["default:tin_ingot"] = true,
 	['moreores:mithril_ingot'] = true,
 	['moreores:tin_ingot'] = true,
 	['moreores:silver_ingot'] = true,
@@ -78,6 +81,14 @@ local metal_ingots =
 	["metals:wrought_iron_ingot"] = true,
 	["metals:steel_ingot"] = true,
 	["mesecons_materials:silicon"] = true, -- not exactly an ingot, but should be a smelter product
+}
+
+local metal_blocks = 
+{
+	['default:steelblock'] = true,
+	['default:copperblock'] = true,
+	['default:goldblock'] = true,
+	['default:bronzeblock'] = true,
 }
 
 local cooked_food_items =
@@ -93,7 +104,10 @@ local function is_stone(item_name)
 	end
 	if has_prefix(item_name, "castle_masonry:") then
 		return true
-	end	
+	end
+	if has_prefix(item_name, "hemp:hempcrete") then
+		return true
+	end
 	return false
 end
 
@@ -120,7 +134,7 @@ local function is_cooked_food(item_name)
 	end
 end
 
-local mechanical_mod_prefixes = {"technic:", "mesecons", "digtron:", "hopper:", "elevator:", "pipeworks:",}
+local mechanical_mod_prefixes = {"technic:", "mesecons", "digtron:", "hopper:", "elevator:", "pipeworks:", "tnt:",}
 
 local function is_mechanical(item_name)
 	for _, mod in pairs(mechanical_mod_prefixes) do
@@ -137,7 +151,7 @@ local function is_dye(item_name)
 end
 
 local function is_fabric(item_name)
-	if is_group(item_name, "thread") or is_group(item_name, "wool") or item_name == "farming:cotton" then
+	if is_group(item_name, "thread") or is_group(item_name, "wool") or item_name == "farming:cotton" or has_prefix(item_name, "hemp:") then
 		return true
 	end
 end
@@ -182,6 +196,13 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 			
 			simplecrafting_lib.register("smelter", recycle_recipe)
 		end
+		
+		-- There are a few non-cooking recycling recipes already, such as breaking down metal blocks.
+		for item, count in pairs(recipe.output) do
+			if is_metal_ingot(item) or item == "default:glass" then
+				return "smelter", true
+			end
+		end
 	
 		-- Carpentry overrides first
 		for item, count in pairs(recipe.output) do
@@ -198,6 +219,17 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 		-- Have to do this before the mechanic test, otherwise it doesn't make it to the smelter test.
 		if recipe.output["mesecons_materials:silicon"] then
 			return "smelter", true
+		end
+		
+		if recipe.output["default:obsidian"] then
+			return "smelter", true
+		end
+		
+		-- not ideal, but will do for now.
+		for item, count in pairs(recipe.output) do
+			if has_prefix(item, "ropes:") then
+				return "loom", true
+			end
 		end
 		
 		-- Mechanical items
@@ -217,6 +249,11 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 			recipe.cooktime = metal_melt_time * metal_count
 			return "forge", true
 		end
+		for item, count in pairs(recipe.input) do
+			if metal_blocks[item] then
+				return "forge", true
+			end
+		end
 		
 		-- Masonry items
 		for item, count in pairs(recipe.input) do
@@ -232,6 +269,7 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 			end
 		end
 		
+		--Dying
 		for item, count in pairs(recipe.input) do
 			if is_dye(item) then
 				return "dyer", true
@@ -243,13 +281,28 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 			end
 		end
 		
+		--Loom
 		for item, count in pairs(recipe.input) do
 			if is_fabric(item) then
 				return "loom", true
+			end			
+		end
+
+		-- also put glass recipes in the smelter for now.
+		for item, count in pairs(recipe.input) do
+			if item == "default:glass" or item == "default:obsidian_glass" then
+				return "smelter", true
 			end
 		end
 		
-		--minetest.debug("Leftover normal recipe: " .. dump(recipe))
+		-- Any remaining oddballs
+		for item, count in pairs(recipe.output) do
+			if item == "homedecor:oil_extract" then
+				return "cooking", true
+			end
+		end
+		
+		minetest.debug("Leftover normal recipe: " .. dump(recipe))
 		
 	end
 	
@@ -267,6 +320,13 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 				return "cooking", true
 			end
 		end
+		
+		-- There's some mesecons recipes in the furnace
+		for item, count in pairs(recipe.output) do
+			if is_mechanical(item) then
+				return "forge", true
+			end
+		end		
 	end
 	
 	-- All fuel can be used for cooking.

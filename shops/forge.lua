@@ -67,6 +67,11 @@ end
 minetest.register_node("workshops:forge", forge_def)
 minetest.register_node("workshops:forge_active", forge_def_active)
 
+simplecrafting_lib.register_crafting_guide_item("workshops:forge_guide", "forge", {
+	guide_color = "#555555",
+	copy_item_to_book = "workshops:forge",
+})
+
 minetest.register_node("workshops:anvil", {
 	description = S("Anvil"),
 	tiles = {"default_furnace_top.png"},
