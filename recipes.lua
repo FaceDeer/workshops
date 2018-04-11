@@ -105,6 +105,12 @@ local function is_stone(item_name)
 	if has_prefix(item_name, "castle_masonry:") then
 		return true
 	end
+	if has_prefix(item_name, "castle_gates:") and item_name:find("gate_slot") then
+		return true
+	end
+	if has_prefix(item_name, "moreblocks:") and item_name:find("cobble") then
+		return true
+	end
 	if has_prefix(item_name, "hemp:hempcrete") then
 		return true
 	end
@@ -113,6 +119,9 @@ end
 
 local function is_wood(item_name)
 	if is_group(item_name, "wood") or is_group(item_name, "tree") or is_group(item_name, "stick") or is_group(item_name, "sapling") or raw_wood[item_name] then
+		return true
+	end
+	if has_prefix(item_name, "moreblocks:") and (item_name:find("wood") or item_name:find("cactus")) then
 		return true
 	end
 	return false
