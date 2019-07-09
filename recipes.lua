@@ -171,8 +171,32 @@ local metal_melt_time = 5.0
 
 -- The order these items are checked in allows for more "complicated" workshops to override "simpler" ones.
 
-simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
-	if legacy_method == "normal" then 
+simplecrafting_lib.register_recipe_import_filter(function(recipe)
+	local output_name = ItemStack(recipe.output):get_name()
+	
+	if recipe.input["simplecrafting_lib:heat"] then
+		-- smelter recipes
+		if is_metal_ingot(output_name) or output_name == "default:glass" or output_name == "default:obsidian_glass" then
+			return "smelter", true
+		end
+		
+		-- kitchen recipes
+		if is_cooked_food(output_name) then
+			return "cooking", true
+		end
+		
+		-- There's some mesecons recipes in the furnace
+		if is_mechanical(output_name) then
+			return "forge", true
+		end		
+	elseif output_name == "simplecrafting_lib:heat" then
+		if recipe.input["default:coal_lump"] == 1 then
+			recipe.returns={["workshops:coal_ash"] = 1}
+		elseif recipe.input["default:coalblock"] == 1 then
+			recipe.returns={["workshops:coal_ash"] = 9}
+		end
+		return "cooking_fuel", false
+	else
 		-- Create "recycling" recipes that allow smelters to melt down items that
 		-- were made from metal ingots, recovering the metal ingots
 		local metal_inputs = {}
@@ -195,12 +219,10 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 			end
 			metal_inputs[max_item] = nil
 			local recycle_recipe = {}
-			recycle_recipe.cooktime = metal_count * metal_melt_time
 			recycle_recipe.input = {}
-			for item, count in pairs(recipe.output) do
-				recycle_recipe.input[item] = count
-			end
-			recycle_recipe.output = {[max_item] = max_count}
+			recycle_recipe.input["simplecrafting_lib:heat"] = metal_count * metal_melt_time
+			recycle_recipe.input[output_name] = recipe.output:get_count()
+			recycle_recipe.output = ItemStack(max_item .. " " .. tostring(max_count))
 			recycle_recipe.returns = metal_inputs
 			
 			simplecrafting_lib.register("smelter", recycle_recipe)
@@ -210,40 +232,34 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 		-- Eliminate these.
 		for in_item, in_count in pairs(recipe.input) do
 			if metal_blocks[in_item] then
-				for item, count in pairs(recipe.output) do
-					if is_metal_ingot(item) then
-						return nil, true
-					end
+				if is_metal_ingot(output_name) then
+					return nil, true
 				end
 			end
 		end
 	
 		-- Carpentry overrides first
-		for item, count in pairs(recipe.output) do
-			if carpentry_output_whitelist[item] then
-				return "carpentry", true
-			end
+		if carpentry_output_whitelist[output_name] then
+			return "carpentry", true
 		end
 
 		-- special handling for Digtron recycling recipes to prevent disintermediation loops
-		if recipe.output["digtron:digtron_core"] and not recipe.input["default:mese_crystal_fragment"] then
+		if output_name == "digtron:digtron_core" and not recipe.input["default:mese_crystal_fragment"] then
 			recipe.do_not_use_for_disintermediation = true
 		end
 		
 		-- Have to do this before the mechanic test, otherwise it doesn't make it to the smelter test.
-		if recipe.output["mesecons_materials:silicon"] then
+		if output_name == "mesecons_materials:silicon" then
 			return "smelter", true
 		end
 		
-		if recipe.output["default:obsidian"] then
+		if output_name == "default:obsidian" then
 			return "smelter", true
 		end
 		
 		-- not ideal, but will do for now.
-		for item, count in pairs(recipe.output) do
-			if has_prefix(item, "ropes:") then
-				return "loom", true
-			end
+		if has_prefix(output_name, "ropes:") then
+			return "loom", true
 		end
 		
 		-- Mechanical items
@@ -252,15 +268,14 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 				return "mechanic", true
 			end
 		end
-		for item, count in pairs(recipe.output) do
-			if is_mechanical(item) then
-				return "mechanic", true
-			end	
+		if is_mechanical(output_name) then
+			return "mechanic", true
 		end
 		
 		-- Forge items
 		if metal_count > 0 then
-			recipe.cooktime = metal_melt_time * metal_count
+			minetest.debug(dump(recipe))
+			recipe.input["simplecrafting_lib:heat"] = metal_melt_time * metal_count
 			return "forge", true
 		end
 		for item, count in pairs(recipe.input) do
@@ -289,10 +304,8 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 				return "dyer", true
 			end
 		end
-		for item, count in pairs(recipe.output) do
-			if is_dye(item) then
-				return "dyer", true
-			end
+		if is_dye(output_name) then
+			return "dyer", true
 		end
 		
 		--Loom
@@ -310,60 +323,23 @@ simplecrafting_lib.register_recipe_import_filter(function(legacy_method, recipe)
 		end
 		
 		-- Any remaining oddballs
-		for item, count in pairs(recipe.output) do
-			if item == "homedecor:oil_extract" then
-				return "cooking", true
-			end
+		if output_name == "homedecor:oil_extract" then
+			return "cooking", true
 		end
 		
 		--minetest.debug("Leftover normal recipe: " .. dump(recipe))
 		
-	end
-	
-	if legacy_method == "cooking" then
-		-- smelter recipes
-		for item, count in pairs(recipe.output) do
-			if is_metal_ingot(item) or item == "default:glass" or item == "default:obsidian_glass" then
-				return "smelter", true
-			end
-		end
-		
-		-- kitchen recipes
-		for item, count in pairs(recipe.output) do
-			if is_cooked_food(item) then
-				return "cooking", true
-			end
-		end
-		
-		-- There's some mesecons recipes in the furnace
-		for item, count in pairs(recipe.output) do
-			if is_mechanical(item) then
-				return "forge", true
-			end
-		end		
-	end
-	
-	-- All fuel can be used for cooking.
-	if legacy_method == "fuel" then
-		if recipe.input["default:coal_lump"] == 1 then
-			recipe.returns={["workshops:coal_ash"] = 1}
-		elseif recipe.input["default:coalblock"] == 1 then
-			recipe.returns={["workshops:coal_ash"] = 9}
-		end
-		return "cooking_fuel", false
 	end
 end)
 
 -- Only coal is hot enough for smelter fuel.
 simplecrafting_lib.register("smelter_fuel", {
 	input={["default:coal_lump"]=1},
-	burntime = 30,
+	output= "simplecrafting_lib:heat 30",
 	returns={["workshops:coal_ash"]=1}
 })
 simplecrafting_lib.register("smelter_fuel", {
 	input={["default:coalblock"]=1},
-	burntime = 270,
+	output= "simplecrafting_lib:heat 270",
 	returns={["workshops:coal_ash"]=9}
 })
-
-simplecrafting_lib.import_legacy_recipes()
